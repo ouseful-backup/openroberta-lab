@@ -20,8 +20,18 @@ import de.fhg.iais.roberta.visitor.lang.ILanguageVisitor;
  * The enumeration {@link FunctionNames} contains all allowed functions.
  */
 public class MathRandomFloatFunct<V> extends Function<V> {
+
+    boolean hasArgs; // var for use of exprBlock
+
     private MathRandomFloatFunct(BlocklyBlockProperties properties, BlocklyComment comment) {
         super(BlockTypeContainer.getByName("MATH_RANDOM_FLOAT_FUNCT"), properties, comment);
+        this.hasArgs = false;
+        setReadOnly();
+    }
+
+    private MathRandomFloatFunct(boolean hasArgs, BlocklyBlockProperties properties, BlocklyComment comment) {
+        super(BlockTypeContainer.getByName("MATH_RANDOM_FLOAT_FUNCT"), properties, comment);
+        this.hasArgs = hasArgs;
         setReadOnly();
     }
 
@@ -34,6 +44,20 @@ public class MathRandomFloatFunct<V> extends Function<V> {
      */
     public static <V> MathRandomFloatFunct<V> make(BlocklyBlockProperties properties, BlocklyComment comment) {
         return new MathRandomFloatFunct<V>(properties, comment);
+    }
+
+    /**
+     * factory method: creates instance of {@link MathRandomFloatFunct}.<br>
+     * <b>Main use: either testing or textual representation of programs (because in these cases no graphical regeneration is required.</b>
+     *
+     * @return read only object of class {@link MathRandomFloatFunct}
+     */
+    public static <V> MathRandomFloatFunct<V> make() {
+        return new MathRandomFloatFunct<V>(BlocklyBlockProperties.make("1", "1"), null);
+    }
+
+    public static <V> MathRandomFloatFunct<V> make(boolean hasArgs) {
+        return new MathRandomFloatFunct<V>(hasArgs, BlocklyBlockProperties.make("1", "1"), null);
     }
 
     @Override
@@ -59,6 +83,10 @@ public class MathRandomFloatFunct<V> extends Function<V> {
     @Override
     public String toString() {
         return "MathRandomFloatFunct []";
+    }
+
+    public boolean hasArgs() {
+        return this.hasArgs;
     }
 
     /**

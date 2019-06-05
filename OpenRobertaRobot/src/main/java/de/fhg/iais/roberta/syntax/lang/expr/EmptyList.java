@@ -36,12 +36,48 @@ public class EmptyList<V> extends Expr<V> {
     /**
      * creates instance of {@link EmptyList}. This instance is read only and can not be modified.
      *
+     * @param typeVar type of the value that the empty list should have.
      * @param properties of the block (see {@link BlocklyBlockProperties}),
      * @param comment added from the user,
      * @return read only object of class {@link NullConst}
      */
     public static <V> EmptyList<V> make(BlocklyType typeVar, BlocklyBlockProperties properties, BlocklyComment comment) {
         return new EmptyList<V>(typeVar, properties, comment);
+    }
+
+    /**
+     * factory method: creates instance of {@link EmptyList}.<br>
+     * <b>Main use: either testing or textual representation of programs (because in these cases no graphical regeneration is required.</b>
+     *
+     * @param typeVar type of the value that the empty list should have.
+     * @return read only object of class {@link NullConst}
+     */
+    public static <V> EmptyList<V> make(BlocklyType typeVar) {
+        return new EmptyList<V>(typeVar, BlocklyBlockProperties.make("1", "1"), null);
+    }
+
+    /**
+     * factory method: creates instance of {@link EmptyList}.<br>
+     * <b>Main use: either testing or textual representation of programs (because in these cases no graphical regeneration is required.</b>
+     *
+     * @param name of the blockly type of the value that the missing expression should have.
+     * @return read only object of class {@link NullConst}
+     */
+    public static <V> EmptyList<V> make(String blocklyName) {
+        return new EmptyList<V>(BlocklyType.get(blocklyName), BlocklyBlockProperties.make("1", "1"), null);
+    }
+
+    /**
+     * factory method: creates instance of {@link EmptyList}.<br>
+     * <b>Main use: either testing or textual representation of programs (because in these cases no graphical regeneration is required.</b>
+     *
+     * @param name of the blockly type of the value that the missing expression should have.
+     * @param properties of the block (see {@link BlocklyBlockProperties}),
+     * @param comment added from the user,
+     * @return read only object of class {@link NullConst}
+     */
+    public static <V> EmptyList<V> make(String blocklyName, BlocklyBlockProperties properties, BlocklyComment comment) {
+        return new EmptyList<V>(BlocklyType.get(blocklyName), properties, comment);
     }
 
     /**

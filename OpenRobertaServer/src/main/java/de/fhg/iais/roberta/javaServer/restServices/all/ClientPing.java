@@ -62,7 +62,7 @@ public class ClientPing {
             if ( counter % EVERY_REQUEST == 0 ) {
                 LOG.info("suppressed now " + counter + " DbcKeyExceptions. Last message was: " + e.getMessage());
             }
-            return null;
+            return null; 
         } catch ( Exception e ) {
             LOG.info("suppressed exception is: " + e.getMessage());
             return null;

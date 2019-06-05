@@ -35,10 +35,13 @@ import de.fhg.iais.roberta.syntax.action.speech.SayTextAction;
 import de.fhg.iais.roberta.syntax.action.speech.SetLanguageAction;
 import de.fhg.iais.roberta.syntax.lang.expr.Binary;
 import de.fhg.iais.roberta.syntax.lang.expr.EmptyExpr;
+import de.fhg.iais.roberta.syntax.lang.expr.EvalExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
 import de.fhg.iais.roberta.syntax.lang.expr.NumConst;
 import de.fhg.iais.roberta.syntax.lang.expr.Unary;
 import de.fhg.iais.roberta.syntax.lang.expr.Var;
+import de.fhg.iais.roberta.syntax.lang.expr.VarDeclaration;
+import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.ExprlyTypechecker;
 import de.fhg.iais.roberta.syntax.lang.functions.GetSubFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.IndexOfFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.LengthOfIsEmptyFunct;
@@ -66,7 +69,9 @@ import de.fhg.iais.roberta.syntax.sensor.generic.SoundSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.TimerSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.TouchSensor;
 import de.fhg.iais.roberta.syntax.sensor.generic.UltrasonicSensor;
+import de.fhg.iais.roberta.typecheck.BlocklyType;
 import de.fhg.iais.roberta.typecheck.NepoInfo;
+import de.fhg.iais.roberta.util.Key;
 import de.fhg.iais.roberta.util.dbc.Assert;
 import de.fhg.iais.roberta.visitor.hardware.actor.IAllActorsVisitor;
 import de.fhg.iais.roberta.visitor.hardware.sensor.ISensorVisitor;
@@ -74,6 +79,7 @@ import de.fhg.iais.roberta.visitor.hardware.sensor.ISensorVisitor;
 public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorVisitor implements IAllActorsVisitor<Void>, ISensorVisitor<Void> {
 
     protected ArrayList<ArrayList<Phrase<Void>>> checkedProgram;
+    protected Key errorKey = null;
     protected int errorCount = 0;
     protected int warningCount = 0;
     protected Configuration robotConfiguration;
@@ -429,7 +435,7 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
     }
 
     private void checkMotorRotationDirection(Phrase<Void> driveAction, ConfigurationComponent m1, ConfigurationComponent m2) {
-        if ( (m1 != null) && (m2 != null) && !m1.getProperty(SC.MOTOR_REVERSE).equals(m2.getProperty(SC.MOTOR_REVERSE)) ) {
+        if ( m1 != null && m2 != null && !m1.getProperty(SC.MOTOR_REVERSE).equals(m2.getProperty(SC.MOTOR_REVERSE)) ) {
             driveAction.addInfo(NepoInfo.error("CONFIGURATION_ERROR_MOTORS_ROTATION_DIRECTION"));
             this.errorCount++;
         }
@@ -458,7 +464,7 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
 
     private void checkForZeroSpeed(Expr<Void> speed, Action<Void> action) {
         if ( speed.getKind().hasName("NUM_CONST") ) {
-            NumConst<Void> speedNumConst = (NumConst<Void>) speed;
+            NumConst<Void> speedNumConst = (NumConst<Void>) (speed instanceof EvalExpr<?> ? ((EvalExpr<Void>) speed).getExpr() : speed);
             if ( Integer.valueOf(speedNumConst.getValue()) == 0 ) {
                 action.addInfo(NepoInfo.warning("MOTOR_SPEED_0"));
                 this.warningCount++;
@@ -473,7 +479,7 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
             int signLeft = (int) Math.signum(speedLeftNumConst);
             int signRight = (int) Math.signum(speedRightNumConst);
             boolean sameSpeed = Math.abs(speedLeftNumConst) == Math.abs(speedRightNumConst); //NOSONAR : TODO: supply an delta of 0.1 (speed is in [0,100] ?
-            if ( sameSpeed && (signLeft != signRight) && (signLeft != 0) && (signRight != 0) ) {
+            if ( sameSpeed && signLeft != signRight && signLeft != 0 && signRight != 0 ) {
                 action.addInfo(NepoInfo.warning("BLOCK_NOT_EXECUTED"));
                 this.warningCount++;
             }
@@ -626,15 +632,37 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
     @Override
     public Void visitBinary(Binary<Void> binary) {
         super.visitBinary(binary);
-        if ( ((binary.getOp() == Binary.Op.MATH_CHANGE) || (binary.getOp() == Binary.Op.TEXT_APPEND)) && (binary.getLeft() instanceof EmptyExpr) ) {
+        if ( (binary.getOp() == Binary.Op.MATH_CHANGE || binary.getOp() == Binary.Op.TEXT_APPEND) && binary.getLeft() instanceof EmptyExpr ) {
             binary.addInfo(NepoInfo.error("ERROR_MISSING_PARAMETER"));
             this.errorCount++;
         }
 
-        if ( ((binary.getOp() == Binary.Op.AND) || (binary.getOp() == Binary.Op.OR))
-            && ((binary.getLeft() instanceof EmptyExpr) || (binary.getRight() instanceof EmptyExpr)) ) {
+        if ( (binary.getOp() == Binary.Op.AND || binary.getOp() == Binary.Op.OR)
+            && (binary.getLeft() instanceof EmptyExpr || binary.getRight() instanceof EmptyExpr) ) {
             binary.addInfo(NepoInfo.error("ERROR_MISSING_PARAMETER"));
             this.errorCount++;
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitEvalExpr(EvalExpr<Void> evalExpr) {
+        if ( evalExpr.hasSyntaxError() ) {
+            addError(Key.EXPRBLOCK_PARSE_ERROR.getKey(), evalExpr);
+        } else {
+            int i = 0;
+            ArrayList<VarDeclaration<Void>> vars = this.getVisitedVars();
+            for ( int k = 1; k < vars.size(); k++ ) {
+                if ( vars.get(k).getName().equals(vars.get(0).getName()) ) {
+                    i = k;
+                    break;
+                }
+            }
+            ExprlyTypechecker<Void> checker = new ExprlyTypechecker<>(evalExpr.getExpr(), BlocklyType.get(evalExpr.getType()), vars.subList(i, vars.size()));
+            checker.check();
+            if ( checker.getNumErrors() > 0 ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR.getKey(), evalExpr);
+            }
         }
         return null;
     }

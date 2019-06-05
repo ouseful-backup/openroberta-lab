@@ -34,6 +34,17 @@ public class EmptyExpr<V> extends Expr<V> {
     }
 
     /**
+     * factory method: create read only instance from {@link EmptyExpr}.<br>
+     * <b>Main use: either testing or textual representation of programs (because in these cases no graphical regeneration is required.</b>
+     *
+     * @param name of the blockly type of the value that the missing expression should have.
+     * @return read only object of class {@link EmptyExpr}.
+     */
+    public static <V> EmptyExpr<V> make(String blocklyName) {
+        return new EmptyExpr<V>(BlocklyType.get(blocklyName));
+    }
+
+    /**
      * @return type of the value that the missing expression should have.
      */
     public BlocklyType getDefVal() {

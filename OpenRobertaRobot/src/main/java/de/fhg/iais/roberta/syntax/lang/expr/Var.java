@@ -47,6 +47,32 @@ public class Var<V> extends Expr<V> {
     }
 
     /**
+     * factory method: create an AST instance of {@link Var}.<br>
+     * <b>Main use: either testing or textual representation of programs (because in these cases no graphical regeneration is required.</b>
+     *
+     * @param name of the type of the variable; must be <b>not</b> null,
+     * @param value name of the variable; must be <b>non-empty</b> string,
+     * @param properties of the block (see {@link BlocklyBlockProperties}),
+     * @param comment added from the user,
+     * @return read only object of class {@link Var}
+     */
+    public static <V> Var<V> make(String blocklyName, String value, BlocklyBlockProperties properties, BlocklyComment comment) {
+        return new Var<V>(BlocklyType.get(blocklyName), value, properties, comment);
+    }
+
+    /**
+     * factory method: create an AST instance of {@link Var}.<br>
+     * <b>Main use: either testing or textual representation of programs (because in these cases no graphical regeneration is required.</b>
+     *
+     * @param name of the type of the variable; must be <b>not</b> null,
+     * @param value name of the variable; must be <b>non-empty</b> string,
+     * @return read only object of class {@link Var}
+     */
+    public static <V> Var<V> make(String blocklyName, String value) {
+        return new Var<V>(BlocklyType.get(blocklyName), value, BlocklyBlockProperties.make("1", "1"), null);
+    }
+
+    /**
      * @return name of the variable
      */
     public String getValue() {

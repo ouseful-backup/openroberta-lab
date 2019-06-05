@@ -509,7 +509,7 @@ public class ClientProgram {
                             Statistics.info("ProgramCompile");
                         } else {
                             compilerResponse = compilerWorkflow.getCrosscompilerResponse();
-                            Util.addErrorInfo(response, messageKey, compilerResponse);
+                            Util.addErrorInfo(response, messageKey, compilerResponse); 
                         }
                     } else {
                         messageKey = Key.PROGRAM_IMPORT_ERROR;

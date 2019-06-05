@@ -21,6 +21,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.BoolConst;
 import de.fhg.iais.roberta.syntax.lang.expr.ConnectConst;
 import de.fhg.iais.roberta.syntax.lang.expr.EmptyExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.EmptyList;
+import de.fhg.iais.roberta.syntax.lang.expr.EvalExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
 import de.fhg.iais.roberta.syntax.lang.expr.ExprList;
 import de.fhg.iais.roberta.syntax.lang.expr.FunctionExpr;
@@ -164,6 +165,11 @@ public abstract class AbstractSimVisitor<V> implements ILanguageVisitor<V> {
     @Override
     public V visitVarDeclaration(VarDeclaration<V> var) {
         this.sb.append("createVarDeclaration(CONST." + var.getTypeVar() + ", \"" + var.getName() + "\", ");
+        if ( var.getValue() instanceof EvalExpr<?> ) {
+            var.getValue().visit(this);
+            this.sb.append(")");
+            return null;
+        }
         if ( var.getValue().getKind().hasName("EXPR_LIST") ) {
             ExprList<V> list = (ExprList<V>) var.getValue();
             if ( list.get().size() == 2 ) {
