@@ -648,7 +648,7 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
     @Override
     public Void visitEvalExpr(EvalExpr<Void> evalExpr) {
         if ( evalExpr.hasSyntaxError() ) {
-            addError(Key.EXPRBLOCK_PARSE_ERROR.getKey(), evalExpr);
+            addError(Key.COMPILERWORKFLOW_ERROR_CONFIGURATION_NOT_FOUND.getKey(), evalExpr);
         } else {
             int i = 0;
             ArrayList<VarDeclaration<Void>> vars = this.getVisitedVars();
@@ -661,7 +661,7 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
             ExprlyTypechecker<Void> checker = new ExprlyTypechecker<>(evalExpr.getExpr(), BlocklyType.get(evalExpr.getType()), vars.subList(i, vars.size()));
             checker.check();
             if ( checker.getNumErrors() > 0 ) {
-                addError(Key.EXPRBLOCK_TYPECHECK_ERROR.getKey(), evalExpr);
+                addError(Key.COMPILERWORKFLOW_ERROR_PROGRAM_NOT_FOUND.getKey(), evalExpr);
             }
         }
         return null;

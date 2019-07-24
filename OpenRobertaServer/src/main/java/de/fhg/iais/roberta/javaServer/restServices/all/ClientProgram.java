@@ -148,25 +148,36 @@ public class ClientProgram {
                     if ( transformer.getErrorMessage() != null ) {
                         forMessages.setStatus(ProcessorStatus.FAILED, transformer.getErrorMessage(), responseParameters);
                     } else {
+                        Key errorKey;
                         if ( (!SSID.equals("null") || !password.equals("null")) && (!SSID.equals("") || !password.equals("")) ) {
                             final AbstractProgramValidatorVisitor programChecker =
                                 robotFactory.getRobotProgramCheckVisitor(transformer.getRobotConfiguration(), SSID, password);
-                            programConfigurationCompatibilityCheck(response, transformer, programChecker);
-                            compilerWorkflow.generateSourceCode(token, programName, transformer, SSID, password, language);
+                            errorKey = programConfigurationCompatibilityCheck(response, transformer, programChecker);
+                            if ( errorKey == null ) {
+                                compilerWorkflow.generateSourceCode(token, programName, transformer, SSID, password, language);
+                            } else {
+                                forMessages.setStatus(ProcessorStatus.FAILED, errorKey, null);
+                            }
                         } else {
                             final AbstractProgramValidatorVisitor programChecker =
                                 robotFactory.getRobotProgramCheckVisitor(transformer.getRobotConfiguration());
-                            programConfigurationCompatibilityCheck(response, transformer, programChecker);
-                            compilerWorkflow.generateSourceCode(token, programName, transformer, language);
+                            errorKey = programConfigurationCompatibilityCheck(response, transformer, programChecker);
+                            if ( errorKey == null ) {
+                                compilerWorkflow.generateSourceCode(token, programName, transformer, language);
+                            } else {
+                                forMessages.setStatus(ProcessorStatus.FAILED, errorKey, null);
+                            }
                         }
-                        responseParameters = compilerWorkflow.getValidationResults();
-                        String sourceCode = compilerWorkflow.getGeneratedSourceCode();
-                        if ( sourceCode == null ) {
-                            forMessages.setStatus(ProcessorStatus.FAILED, compilerWorkflow.getWorkflowResult(), responseParameters);
-                        } else {
-                            response.put("sourceCode", sourceCode);
-                            response.put("fileExtension", robotFactory.getFileExtension());
-                            forMessages.setStatus(ProcessorStatus.SUCCEEDED, Key.COMPILERWORKFLOW_PROGRAM_GENERATION_SUCCESS, responseParameters);
+                        if ( errorKey == null ) {
+                            responseParameters = compilerWorkflow.getValidationResults();
+                            String sourceCode = compilerWorkflow.getGeneratedSourceCode();
+                            if ( sourceCode == null ) {
+                                forMessages.setStatus(ProcessorStatus.FAILED, compilerWorkflow.getWorkflowResult(), responseParameters);
+                            } else {
+                                response.put("sourceCode", sourceCode);
+                                response.put("fileExtension", robotFactory.getFileExtension());
+                                forMessages.setStatus(ProcessorStatus.SUCCEEDED, Key.COMPILERWORKFLOW_PROGRAM_GENERATION_SUCCESS, responseParameters);
+                            }
                         }
                     }
                     Util.addResultInfo(response, forMessages);
@@ -509,7 +520,7 @@ public class ClientProgram {
                             Statistics.info("ProgramCompile");
                         } else {
                             compilerResponse = compilerWorkflow.getCrosscompilerResponse();
-                            Util.addErrorInfo(response, messageKey, compilerResponse); 
+                            Util.addErrorInfo(response, messageKey, compilerResponse);
                         }
                     } else {
                         messageKey = Key.PROGRAM_IMPORT_ERROR;
