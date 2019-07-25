@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.fhg.iais.roberta.blockly.generated.Block;
 import de.fhg.iais.roberta.blockly.generated.Field;
@@ -19,6 +21,7 @@ import de.fhg.iais.roberta.syntax.BlocklyBlockProperties;
 import de.fhg.iais.roberta.syntax.BlocklyComment;
 import de.fhg.iais.roberta.syntax.BlocklyConstants;
 import de.fhg.iais.roberta.syntax.Phrase;
+import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.EvalExprErrorListener;
 import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.ExprlyAST;
 import de.fhg.iais.roberta.transformer.AbstractJaxb2Ast;
 import de.fhg.iais.roberta.transformer.Ast2JaxbHelper;
@@ -33,6 +36,7 @@ import de.fhg.iais.roberta.visitor.lang.ILanguageVisitor;
 public class EvalExpr<V> extends Expr<V> {
     private final String expr;
     private final String type;
+    private static final Logger LOG = LoggerFactory.getLogger(EvalExpr.class);
     private final Expr<V> exprBlock;
 
     private EvalExpr(String expr, Expr<V> exprBlock, String type, BlocklyBlockProperties properties, BlocklyComment comment) throws Exception {
@@ -83,7 +87,7 @@ public class EvalExpr<V> extends Expr<V> {
      * @return true if the expression string has a syntax error detected by the grammar visitor
      */
     public boolean hasSyntaxError() {
-        return exprBlock instanceof NullConst && !"null".equals(expr);
+        return this.exprBlock instanceof NullConst && !"null".equals(this.expr);
     }
 
     @Override
@@ -173,9 +177,15 @@ public class EvalExpr<V> extends Expr<V> {
      */
     private static <V> Expr<V> expr2AST(String expr) throws Exception {
         ExprlyParser parser = mkParser(expr);
+        EvalExprErrorListener err = new EvalExprErrorListener();
+        parser.removeErrorListeners();
+        parser.addErrorListener(err);
         ExprlyAST<V> eval = new ExprlyAST<>();
         ExpressionContext expression = parser.expression();
         if ( parser.getNumberOfSyntaxErrors() > 0 ) {
+            for ( String s : err.getError() ) {
+                LOG.error(s);
+            }
             return NullConst.make();
         } else {
             Expr<V> blk = eval.visitExpression(expression);

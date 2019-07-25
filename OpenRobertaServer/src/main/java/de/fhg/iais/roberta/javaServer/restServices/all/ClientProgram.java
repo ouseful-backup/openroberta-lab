@@ -64,7 +64,6 @@ import de.fhg.iais.roberta.visitor.validate.AbstractSimValidatorVisitor;
 @Path("/program")
 public class ClientProgram {
     private static final Logger LOG = LoggerFactory.getLogger(ClientProgram.class);
-
     private final SessionFactoryWrapper sessionFactoryWrapper;
     private final RobotCommunicator brickCommunicator;
     private final boolean isPublicServer;
