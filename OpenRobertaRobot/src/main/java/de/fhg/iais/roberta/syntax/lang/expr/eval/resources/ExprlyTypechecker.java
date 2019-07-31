@@ -374,11 +374,15 @@ public class ExprlyTypechecker<T> {
             if ( t.equals(BlocklyType.CONNECTION) ) {
                 return BlocklyType.ARRAY_CONNECTION;
             }
+            if ( t.equals(BlocklyType.COLOR) ) {
+                return BlocklyType.ARRAY_COLOUR;
+            }
             if ( t.equals(BlocklyType.ARRAY)
                 || t.equals(BlocklyType.ARRAY_NUMBER)
                 || t.equals(BlocklyType.ARRAY_BOOLEAN)
                 || t.equals(BlocklyType.ARRAY_STRING)
                 || t.equals(BlocklyType.ARRAY_CONNECTION)
+                || t.equals(BlocklyType.ARRAY_COLOUR)
                 || t.equals(BlocklyType.VOID) ) {
                 return BlocklyType.ARRAY;
             }
@@ -401,7 +405,11 @@ public class ExprlyTypechecker<T> {
      * @return Return Type of function
      */
     private BlocklyType visitMathNumPropFunct(MathNumPropFunct<T> mathNumPropFunct) {
-        return functionHelper(mathNumPropFunct.getParam(), 1, BlocklyType.NUMBER, BlocklyType.BOOLEAN);
+        return functionHelper(
+            mathNumPropFunct.getParam(),
+            mathNumPropFunct.getFunctName().equals(FunctionNames.DIVISIBLE_BY) ? 2 : 1,
+            BlocklyType.NUMBER,
+            BlocklyType.BOOLEAN);
     }
 
     /**
@@ -414,7 +422,7 @@ public class ExprlyTypechecker<T> {
         List<Expr<T>> args = mathOnListFunct.getParam();
         // All the list functions take only one list
         // Check that is only one
-        BlocklyType t;
+        BlocklyType t = BlocklyType.VOID;
         if ( args.size() != 1 ) {
             this.errors.add("INVALID_ARGUMENT_NUMBER");
         }
@@ -430,6 +438,24 @@ public class ExprlyTypechecker<T> {
                     addError("INVALID_ARGUMENT_TYPE");
                 }
             }
+        }
+        if ( mathOnListFunct.getFunctName().equals(FunctionNames.RANDOM) ) {
+            if ( t.equals(BlocklyType.ARRAY_NUMBER) ) {
+                return BlocklyType.NUMBER;
+            }
+            if ( t.equals(BlocklyType.ARRAY_BOOLEAN) ) {
+                return BlocklyType.BOOLEAN;
+            }
+            if ( t.equals(BlocklyType.ARRAY_STRING) ) {
+                return BlocklyType.STRING;
+            }
+            if ( t.equals(BlocklyType.ARRAY_CONNECTION) ) {
+                return BlocklyType.CONNECTION;
+            }
+            if ( t.equals(BlocklyType.ARRAY_COLOUR) ) {
+                return BlocklyType.COLOR;
+            }
+            return BlocklyType.VOID;
         }
         return BlocklyType.NUMBER;
     }
@@ -545,8 +571,8 @@ public class ExprlyTypechecker<T> {
                         || t.equals(BlocklyType.ARRAY_NUMBER)
                         || t.equals(BlocklyType.ARRAY_BOOLEAN)
                         || t.equals(BlocklyType.ARRAY_STRING)
-                        || t.equals(BlocklyType.ARRAY_CONNECTION)) ) //
-                    {
+                        || t.equals(BlocklyType.ARRAY_CONNECTION)
+                        || t.equals(BlocklyType.ARRAY_COLOUR)) ) {
                         addError("INVALID_ARGUMENT_TYPE");
                     }
                 } else {
@@ -557,14 +583,12 @@ public class ExprlyTypechecker<T> {
             }
         }
 
-        if ( t0.equals(BlocklyType.ARRAY_NUMBER) ) {
-            return BlocklyType.ARRAY_NUMBER;
-        } else if ( t0.equals(BlocklyType.ARRAY_BOOLEAN) ) {
-            return BlocklyType.ARRAY_BOOLEAN;
-        } else if ( t0.equals(BlocklyType.ARRAY_STRING) ) {
-            return BlocklyType.ARRAY_STRING;
-        } else if ( t0.equals(BlocklyType.ARRAY_CONNECTION) ) {
-            return BlocklyType.ARRAY_CONNECTION;
+        if ( t0.equals(BlocklyType.ARRAY_NUMBER)
+            || t0.equals(BlocklyType.ARRAY_BOOLEAN)
+            || t0.equals(BlocklyType.ARRAY_STRING)
+            || t0.equals(BlocklyType.ARRAY_CONNECTION)
+            || t0.equals(BlocklyType.ARRAY_COLOUR) ) {
+            return t0;
         }
         return BlocklyType.ARRAY;
     }
@@ -602,7 +626,8 @@ public class ExprlyTypechecker<T> {
                         || t.equals(BlocklyType.ARRAY_NUMBER)
                         || t.equals(BlocklyType.ARRAY_BOOLEAN)
                         || t.equals(BlocklyType.ARRAY_STRING)
-                        || t.equals(BlocklyType.ARRAY_CONNECTION)) ) {
+                        || t.equals(BlocklyType.ARRAY_CONNECTION)
+                        || t.equals(BlocklyType.ARRAY_COLOUR)) ) {
                         addError("INVALID_ARGUMENT_TYPE");
                     }
                 } else {
@@ -620,6 +645,8 @@ public class ExprlyTypechecker<T> {
             return BlocklyType.STRING;
         } else if ( t0.equals(BlocklyType.ARRAY_CONNECTION) ) {
             return BlocklyType.CONNECTION;
+        } else if ( t0.equals(BlocklyType.ARRAY_COLOUR) ) {
+            return BlocklyType.COLOR;
         }
         return BlocklyType.VOID;
     }
@@ -657,7 +684,8 @@ public class ExprlyTypechecker<T> {
                         || t0.equals(BlocklyType.ARRAY_NUMBER)
                         || t0.equals(BlocklyType.ARRAY_BOOLEAN)
                         || t0.equals(BlocklyType.ARRAY_STRING)
-                        || t0.equals(BlocklyType.ARRAY_CONNECTION)) ) {
+                        || t0.equals(BlocklyType.ARRAY_CONNECTION)
+                        || t0.equals(BlocklyType.ARRAY_COLOUR)) ) {
                         addError("INVALID_ARGUMENT_TYPE");
                     }
                 } else {
@@ -714,6 +742,8 @@ public class ExprlyTypechecker<T> {
             return BlocklyType.ARRAY_STRING;
         } else if ( t0.equals(BlocklyType.CONNECTION) ) {
             return BlocklyType.ARRAY_CONNECTION;
+        } else if ( t0.equals(BlocklyType.COLOR) ) {
+            return BlocklyType.ARRAY_COLOUR;
         }
         return BlocklyType.ARRAY;
     }
@@ -747,7 +777,8 @@ public class ExprlyTypechecker<T> {
                     || t0.equals(BlocklyType.ARRAY_NUMBER)
                     || t0.equals(BlocklyType.ARRAY_BOOLEAN)
                     || t0.equals(BlocklyType.ARRAY_STRING)
-                    || t0.equals(BlocklyType.ARRAY_CONNECTION)) ) {
+                    || t0.equals(BlocklyType.ARRAY_CONNECTION)
+                    || t0.equals(BlocklyType.ARRAY_COLOUR)) ) {
                     addError("INVALID_ARGUMENT_TYPE");
                 }
             }

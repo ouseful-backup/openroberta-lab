@@ -449,6 +449,10 @@ public class ExprlyUnParser<T> {
         names.put(FunctionNames.ODD, "isOdd");
         names.put(FunctionNames.PRIME, "isPrime");
         names.put(FunctionNames.WHOLE, "isWhole");
+        names.put(FunctionNames.POSITIVE, "isPositive");
+        names.put(FunctionNames.NEGATIVE, "isNegative");
+        names.put(FunctionNames.DIVISIBLE_BY, "isDivisibleBy");
+        names.put(FunctionNames.LIST_IS_EMPTY, "isEmpty");
         names.put(FunctionNames.SUM, "sum");
         names.put(FunctionNames.AVERAGE, "avg");
         names.put(FunctionNames.MEDIAN, "median");
@@ -465,8 +469,9 @@ public class ExprlyUnParser<T> {
         names.put(FunctionNames.ACOS, "acos");
         names.put(FunctionNames.ATAN, "atan");
         names.put(FunctionNames.POWER, "pow");
-        names.put(FunctionNames.ROUNDUP, "ceil");
-        names.put(FunctionNames.ROUNDDOWN, "floor");
+        names.put(FunctionNames.ROUNDUP, "roundUp");
+        names.put(FunctionNames.ROUNDDOWN, "roundDown");
+        names.put(FunctionNames.ROUND, "round");
         fnames = Collections.unmodifiableMap(names);
     }
 

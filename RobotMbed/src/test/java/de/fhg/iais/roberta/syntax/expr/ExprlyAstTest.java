@@ -201,10 +201,10 @@ public class ExprlyAstTest {
      */
     @Test
     public void radomExp() throws Exception {
-        Expr<Void> rand = expr2AST("e^randFloat()%exp(floor(randInt(1,10)))");
+        Expr<Void> rand = expr2AST("e^randFloat()%exp(roundUp(randInt(1,10)))");
         ExprlyUnParser<Void> p = new ExprlyUnParser<Void>(rand);
         String t =
-            "Binary [MOD, MathPowerFunct [POWER, [MathConst [E], FunctionExpr [MathRandomFloatFunct []]]], FunctionExpr [MathSingleFunct [EXP, [FunctionExpr [MathSingleFunct [ROUNDDOWN, [FunctionExpr [MathRandomIntFunct [[NumConst [1], NumConst [10]]]]]]]]]]]";
+            "Binary [MOD, MathPowerFunct [POWER, [MathConst [E], FunctionExpr [MathRandomFloatFunct []]]], FunctionExpr [MathSingleFunct [EXP, [FunctionExpr [MathSingleFunct [ROUNDUP, [FunctionExpr [MathRandomIntFunct [[NumConst [1], NumConst [10]]]]]]]]]]]";
         String g = p.UnParse();
         ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(rand, BlocklyType.NUMBER);
         c.check();

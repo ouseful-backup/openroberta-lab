@@ -201,28 +201,26 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
         if ( f.equals("sqrt") ) {
             f = "root";
         }
-        if ( f.equals("floor") ) {
-            f = "rounddown";
-        }
-        if ( f.equals("ceil") ) {
-            f = "roundup";
-        }
-        if ( f.equals("isEven") || f.equals("isOdd") || f.equals("isPrime") || f.equals("isWhole") ) {
+        if ( f.equals("isEven") || f.equals("isOdd") || f.equals("isPrime") || f.equals("isWhole") || f.equals("isPositive") || f.equals("isNegative") ) {
             f = f.substring(2);
             return FunctionExpr.make(MathNumPropFunct.make(f, args));
         }
+        if ( f.equals("isDivisibleBy") ) {
+            return FunctionExpr.make(MathNumPropFunct.make(FunctionNames.DIVISIBLE_BY, args));
+        }
         if ( f.equals("avg") ) {
             f = "average";
-            return FunctionExpr.make(MathOnListFunct.make(f, args));
-        }
-        if ( f.equals("median") ) {
             return FunctionExpr.make(MathOnListFunct.make(f, args));
         }
         if ( f.equals("sd") ) {
             f = "std_dev";
             return FunctionExpr.make(MathOnListFunct.make(f, args));
         }
-        if ( f.equals("min") || f.equals("max") || f.equals("sum") ) {
+        if ( f.equals("randItem") ) {
+            f = "random";
+            return FunctionExpr.make(MathOnListFunct.make(f, args));
+        }
+        if ( f.equals("min") || f.equals("max") || f.equals("sum") || f.equals("median") ) {
             return FunctionExpr.make(MathOnListFunct.make(f, args));
         }
         if ( f.equals("lengthOf") ) {

@@ -1008,6 +1008,52 @@
 <ul style="margin-top: 0; margin-bottom: 10px"><li class="typcn typcn-arrow-down">message type, »String«.</li>
 </ul></div>
 </div>
+</div><div class="cell normal" data-type="normal">
+<div class="innerCell">
+<h2 id="Programming-BlocksEV3-Experimental">Experimental <span class="typcn typcn-star"></span></h2>
+<p>The »Experimental« category contains the blocks currently in development and that might not always work as expected.</p>
+<p>This categoty currently includes the following program blocks:</p>
+<ul style="margin-top: 0; margin-bottom: 10px">
+<li class="typcn typcn-arrow-right">EvalExpression Block</li>
+<li class="typcn typcn-arrow-right">Assert Block</li>
+<li class="typcn typcn-arrow-right">Debug Block</li>
+</ul>
+</div>
+</div><div class="cell normal" data-type="normal">
+<div class="innerCell">
+<div id="robActions_eval_expr" class="help expert">
+<h3 id="Programming-BlocksEV3-Evalexpr[Expertblock]"> »Eval Expression«<span class="typcn typcn-star"></span></h3>
+<p>This blocks recieves a string from the user representing the expression from the language they want to use and returns the result from this expression.</p>
+<p>The user must first indicate the type of expression that is returned by the expression before the block can be used in a program.</p>
+<p><p>The supported expressions include the following:</p></p>
+<ul style="margin-top: 0; margin-bottom: 10px">
+<li class="typcn typcn-pen"> <b>Variables:</b> These must contain only lowercase characters and numbers. Note: The name &apos;e&apos; can't be used for a variable as it's parsed as the Math Const »e«.</li>
+<li class="typcn typcn-pen"> <b>Numbers:</b> This includes integers and floats.</li>
+<li class="typcn typcn-pen"> <b>Math const:</b> These math const are represented as »pi«, »e«, »phi«, »sqrt2«, »sqrt_1_2«, »inf«.</li>
+<li class="typcn typcn-pen"> <b>Boolean constants:</b> Represented as »true« and »false«.</li>
+<li class="typcn typcn-pen"> <b>Arithmetic expressions:</b> This includes the operations +, -, *, /, %, ^. For example: »1+2*3« </li>
+<li class="typcn typcn-pen"> <b>Boolean expressions:</b> This includes the operations !, &amp;&amp;, ||, ==, &lt;, &gt;, &lt;=, &gt;=. For example: »true==!false« or »20&lt;=20+1«. </li>
+<li class="typcn typcn-pen"> <b>Strings constants:</b> The string expression must be inside quotes and must only include characters or numbers. For example »&quot;Hello World 64&quot;«.</li>
+<li class="typcn typcn-pen"> <b>Colour const:</b> This colours must be written as hex values. For Example: »#FFFFFF« for white.</li>
+<li class="typcn typcn-pen"> <b>Connection const:</b> This expression must be written as follows: »connect op0, op1«.</li>
+<li class="typcn typcn-pen"> <b>List:</b> List must be written within brackets. For example: »[1,2,3,1+2]« for a Number List</li>
+<li class="typcn typcn-pen"> <b>Number functions:</b> These functions include »sin«, »cos«, »tan«, »asin«, »acos«, »atan«, »sqrt«, »abs«, »log10«, »ln«. All this functions when called take only one argument and it must be a number type. For example: »sqrt(49)« or »sin(pi)«.</li>
+<li class="typcn typcn-pen"> <b>Random Functions:</b> These are called »randInt« and »randFloat« and they represent the »random integer« and »random fraction« blocks respectively. »randInt« takes two numbers as arguments (a lower and an upper bound), while »randFloat« takes no arguments.</li>
+<li class="typcn typcn-pen"> <b>Round functions:</b> These functions are called »round«, »roundUp« and »roundDown« and represent the functions from the »round« block. All this functions when called take only one argument and it must be a number type. For example: »round(2.5)«.</li>
+<li class="typcn typcn-pen"> <b>Number properties functions:</b> These functions are called »isEven«, »isOdd«, »isPrime«, »isWhole«, »isEmpty«, »isPositive«, »isNegative«, »isDivisibleBy« and represent the »number property« block. For example: »isEven(2)«, »isDivisibleBy(2,1)«, »isEmpty([])«.</li>
+<li class="typcn typcn-pen"> <b>List Evaluation Functions:</b> These functions are called »max«, »min«, »sum«, »avg«, »median«, »sd«, »randItem« and they represent the »list evaluation« block. For example: max([1,2,3])</li>
+<li class="typcn typcn-pen"> <b>Length Of Function:</b> This function is called »lengthOf« and it represents the »length of« block. It takes as argument a list and returns it's length. For example: lengthOf([0,0,0,0]) returns 4.</li>
+<li class="typcn typcn-pen"> <b>Repeat Element In List Function:</b> This function is called »repeatList« and represents the »repeat element list« block. It takes as arguments the element to be repeated and the number of times it is to be repeated (in that order). For example: repeatList(0,5) will return [0,0,0,0,0].</li>
+<li class="typcn typcn-pen"> <b>Get List Element Function:</b> These functions are called »getIndex«, »getIndexFromEnd«, »getIndexFirst«, »getIndexLast«, »getAndRemoveIndex«, »getAndRemoveIndexFromEnd«, »getAndRemoveIndexFirst«, »getAndRemoveIndexLast«, »removeIndex«, »removeIndexFromEnd«, »removeIndexFirst«, »removeIndexLast« and they represent the functions from the »get list element« block. The words »First«, »Last« and »FromEnd« in the names represent the mode of the function. The default index mode is to count indexes from the begining of the list. The function needs as arguments the list and the index to get the element from (In that order). If either »First« or »Last« modes are being used then the index is not required. For example: getIndex([1,2,3], 2) will return 3. Another example: getIndexLast([1,2,3]) will return 3.</li>
+<li class="typcn typcn-pen"> <b>Set List Element Function:</b> These functions are called »setIndex«, »setIndexFromEnd«, »setIndexFirst«, »setIndexLast«, »insertIndex«, »insertIndexFromEnd«, »insertIndexFirst«, »insertIndexLast« and they represent the functions from the »set list element« block. The words »First«, »Last« and »FromEnd« in the names represent the mode of the function. The default index mode is to count indexes from the begining of the list. The function needs as arguments the list, the index to be set and the element it is to be set to (In that order). If either »First« or »Last« modes are being used then the index is not required. For example: setIndex([1,2,3], 0, 2) will produce [2,2,3] as a result. Another example: insertIndexLast([1,2,3], 4) will produce [1,2,3,4] as a result. Note: This functions are methods and do not return anything.</li>
+<li class="typcn typcn-pen"> <b>Get Sub List Function:</b> These functions are called »subList« ,»subListFromIndexToLast« ,»subListFromIndexToEnd« ,»subListFromFirstToIndex« ,»subListFromFirstToLast« ,»subListFromFirstToEnd« ,»subListFromEndToIndex« ,»subListFromEndToEnd« ,»subListFromEndToLast« and they represent the functions from the »get sublist« block. The words »From« and »To« indicate that the word that comes next is the mode of the begining and ending index respectively of the original list. The words »First«, »Last«, »Index« and »End« in the names represent the mode of the function. The default index mode is to count both indexes from the begining of the list. The function needs as arguments the list and the start and ending index of the sublist (In that order). If either »First« or »Last« modes are being used then that index is not required. For example: subList([1,2,3], 0,1) will return [1,2]. Another example: subListFromFirstToIndex([1,2,3],1) will return [1,2].</li>
+<li class="typcn typcn-pen"> <b>Append Text Function:</b> This function is called »cat« and represents the »append text« block. It takes two strings as arguments and returns both strings concatenated. For example: cat("Hello ", "World") returns "Hello World".</li>
+<li class="typcn typcn-pen"> <b>Constrain Function:</b> This function is called »constrain« and represents the »constrain« block. It takes as arguments three numbers which are the number to be constrained, a lower bound and an upper bound for it. And returns the number constrained by these bounds.</li>
+<li class="typcn typcn-pen"> <b>Print Text Function:</b> This function is called »print«. It takes a string as argument and prints it.</li>
+<li class="typcn typcn-pen"> <b>Get RGB Function:</b> This function is called »getRGB« and it takes an RGB tuple of 3 or 4 values and returns that RGB color. For example: getRGB(64, 64, 64) returns gray, while getRGB(64, 64, 64, 100) returns gray with some transparency.</li>
+</ul>
+</div>
 </div></div>
+</div>
 </body>
 </html>
