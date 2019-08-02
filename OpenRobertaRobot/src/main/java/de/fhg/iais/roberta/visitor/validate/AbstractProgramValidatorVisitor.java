@@ -648,7 +648,7 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
     @Override
     public Void visitEvalExpr(EvalExpr<Void> evalExpr) {
         if ( evalExpr.hasSyntaxError() ) {
-            addError(Key.COMPILERWORKFLOW_ERROR_CONFIGURATION_NOT_FOUND.getKey(), evalExpr);
+            addError(Key.EXPRBLOCK_PARSE_ERROR.getKey(), evalExpr);
         } else {
             int i = 0;
             ArrayList<VarDeclaration<Void>> vars = this.getVisitedVars();

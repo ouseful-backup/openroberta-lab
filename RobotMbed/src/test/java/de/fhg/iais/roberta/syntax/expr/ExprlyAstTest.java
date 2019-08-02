@@ -22,6 +22,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.Expr;
 import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.ExprlyAST;
 import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.ExprlyTypechecker;
 import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.ExprlyUnParser;
+import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.TcError;
 import de.fhg.iais.roberta.syntax.lang.stmt.ExprStmt;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
 import de.fhg.iais.roberta.util.test.GenericHelperForXmlTest;
@@ -239,9 +240,9 @@ public class ExprlyAstTest {
         ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(eq, BlocklyType.BOOLEAN);
         c.check();
         System.out.println("typeCheckEq Test:");
-        List<String> errors = c.getErrors();
-        for ( String s : errors ) {
-            System.out.println(s);
+        List<TcError> errors = c.getErrors();
+        for ( TcError s : errors ) {
+            System.out.println(s.getKey().getKey());
         }
         System.out.println("");
     }
@@ -256,9 +257,9 @@ public class ExprlyAstTest {
         ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(f, BlocklyType.NUMBER);
         c.check();
         System.out.println("typeCheckMathSingleFunctionCall Test:");
-        List<String> errors = c.getErrors();
-        for ( String s : errors ) {
-            System.out.println(s);
+        List<TcError> errors = c.getErrors();
+        for ( TcError s : errors ) {
+            System.out.println(s.getKey().getKey());
         }
         System.out.println("");
     }
@@ -273,9 +274,9 @@ public class ExprlyAstTest {
         ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(l, BlocklyType.NUMBER);
         c.check();
         System.out.println("typeCheckMathOnListFunct Test:");
-        List<String> errors = c.getErrors();
-        for ( String s : errors ) {
-            System.out.println(s);
+        List<TcError> errors = c.getErrors();
+        for ( TcError s : errors ) {
+            System.out.println(s.getKey().getKey());
         }
         System.out.println("");
     }
@@ -290,9 +291,9 @@ public class ExprlyAstTest {
         ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(l, BlocklyType.NUMBER);
         c.check();
         System.out.println("typeCheckMathOnListFunct1 Test:");
-        List<String> errors = c.getErrors();
-        for ( String s : errors ) {
-            System.out.println(s);
+        List<TcError> errors = c.getErrors();
+        for ( TcError s : errors ) {
+            System.out.println(s.getKey().getKey());
         }
         System.out.println("");
 
@@ -304,9 +305,9 @@ public class ExprlyAstTest {
         ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(l, BlocklyType.COLOR);
         c.check();
         System.out.println("testRGB Test:");
-        List<String> errors = c.getErrors();
-        for ( String s : errors ) {
-            System.out.println(s);
+        List<TcError> errors = c.getErrors();
+        for ( TcError s : errors ) {
+            System.out.println(s.getKey().getKey());
         }
         System.out.println("");
 

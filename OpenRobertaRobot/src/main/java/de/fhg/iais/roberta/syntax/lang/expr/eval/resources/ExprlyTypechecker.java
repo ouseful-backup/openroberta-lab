@@ -39,10 +39,11 @@ import de.fhg.iais.roberta.syntax.lang.functions.MathSingleFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.TextJoinFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.TextPrintFunct;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
+import de.fhg.iais.roberta.util.Key;
 
 public class ExprlyTypechecker<T> {
 
-    private final LinkedList<String> errors;
+    private final LinkedList<TcError> errors;
     private final Phrase<T> ast;
     private BlocklyType resultType;
     private final BlocklyType expectedResultType;
@@ -70,7 +71,7 @@ public class ExprlyTypechecker<T> {
     /**
      * @return list of errors detected
      **/
-    public List<String> getErrors() {
+    public List<TcError> getErrors() {
         return this.errors;
     }
 
@@ -95,8 +96,12 @@ public class ExprlyTypechecker<T> {
         return this.expectedResultType;
     }
 
-    private void addError(String s) {
-        this.errors.add(s);
+    private void addError(Key key, String error, String value) {
+        this.errors.add(TcError.setError(key, error, value));
+    }
+
+    private void addError(Key key) {
+        this.errors.add(TcError.setError(key));
     }
 
     /**
@@ -120,12 +125,10 @@ public class ExprlyTypechecker<T> {
 
         // Check for return type errors
         if ( !this.resultType.equals(this.expectedResultType) ) {
-            if ( this.resultType.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-            } else if ( this.resultType.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
-                addError("UNEXPECTED_RETURN_TYPE");
+            if ( this.resultType.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !this.resultType.equals(BlocklyType.VOID) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_RETURN_TYPE);
             }
         }
     }
@@ -182,13 +185,11 @@ public class ExprlyTypechecker<T> {
         c.add(checkAST(rgbColor.getA()));
 
         for ( BlocklyType t : c ) {
-            if ( t.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-            } else if ( t.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( !t.equals(BlocklyType.NUMBER) ) {
-                    addError("INVALID_ARGUMENT_TYPE");
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                 }
             }
         }
@@ -216,7 +217,8 @@ public class ExprlyTypechecker<T> {
                 return v.getVarType();
             }
         }
-        return var.getVarType();
+        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNDECLARED_VARIABLE, "name", var.getValue());
+        return BlocklyType.VOID;
     }
 
     /**
@@ -229,16 +231,14 @@ public class ExprlyTypechecker<T> {
 
         // Get type of the operand
         BlocklyType t = checkAST(unary.getExpr());
-        if ( t.equals(BlocklyType.VOID) ) {
-            addError("UNDECLARED_VARIABLE");
-        } else if ( t.equals(BlocklyType.NOTHING) ) {
-            addError("UNEXPECTED_METHOD");
+        if ( t.equals(BlocklyType.NOTHING) ) {
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
         }
         // Check if the expression should should be boolean
         if ( unary.getOp().equals(Unary.Op.NOT) ) {
             // If it should be boolean, check if it is
-            if ( !t.equals(BlocklyType.BOOLEAN) && !t.equals(BlocklyType.VOID) ) {
-                addError("INVALID_OPERAND_TYPE");
+            if ( !t.equals(BlocklyType.BOOLEAN) && !t.equals(BlocklyType.VOID) && !t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
             return BlocklyType.BOOLEAN;
 
@@ -246,8 +246,8 @@ public class ExprlyTypechecker<T> {
         } else if ( unary.getOp().equals(Unary.Op.PLUS) || unary.getOp().equals(Unary.Op.NEG) ) {
 
             // If it is a number operation, check if the argument is boolean
-            if ( !t.equals(BlocklyType.NUMBER) && !t.equals(BlocklyType.VOID) ) {
-                addError("INVALID_OPERAND_TYPE");
+            if ( !t.equals(BlocklyType.NUMBER) && !t.equals(BlocklyType.VOID) && !t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
             return BlocklyType.NUMBER;
         }
@@ -266,10 +266,8 @@ public class ExprlyTypechecker<T> {
         BlocklyType tl = checkAST(binary.getLeft());
         BlocklyType tr = checkAST(binary.getRight());
 
-        if ( tl.equals(BlocklyType.VOID) || tr.equals(BlocklyType.VOID) ) {
-            addError("UNDECLARED_VARIABLE");
-        } else if ( tl.equals(BlocklyType.NOTHING) || tr.equals(BlocklyType.NOTHING) ) {
-            addError("UNEXPECTED_METHOD");
+        if ( tl.equals(BlocklyType.NOTHING) || tr.equals(BlocklyType.NOTHING) ) {
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
         }
 
         // Check if its a number operation
@@ -279,32 +277,36 @@ public class ExprlyTypechecker<T> {
             || binary.getOp().equals(Binary.Op.DIVIDE)
             || binary.getOp().equals(Binary.Op.MOD) ) {
             // Check if the left operand is a Number Type
-            if ( !tl.equals(BlocklyType.NUMBER) && !tl.equals(BlocklyType.VOID) ) {
-                addError("INVALID_OPERAND_TYPE");
+            if ( !tl.equals(BlocklyType.NUMBER) && !tl.equals(BlocklyType.VOID) && !tl.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
             // Check if the right operand is a Number Type
-            if ( !tr.equals(BlocklyType.NUMBER) && !tr.equals(BlocklyType.VOID) ) {
-                addError("INVALID_OPERAND_TYPE");
+            if ( !tr.equals(BlocklyType.NUMBER) && !tr.equals(BlocklyType.VOID) && !tr.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
             return BlocklyType.NUMBER;
         }
         // Check if the operation is a boolean operation
         if ( binary.getOp().equals(Binary.Op.AND) || binary.getOp().equals(Binary.Op.OR) ) {
             // Check if the left operand is a Boolean Type
-            if ( !tl.equals(BlocklyType.BOOLEAN) && !tl.equals(BlocklyType.VOID) ) {
-                addError("INVALID_OPERAND_TYPE");
+            if ( !tl.equals(BlocklyType.BOOLEAN) && !tl.equals(BlocklyType.VOID) && !tl.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
-            if ( !tr.equals(BlocklyType.BOOLEAN) && !tr.equals(BlocklyType.VOID) ) {
+            if ( !tr.equals(BlocklyType.BOOLEAN) && !tr.equals(BlocklyType.VOID) && !tr.equals(BlocklyType.NOTHING) ) {
                 // Check if the right operand is a Boolean Type
-                addError("INVALID_OPERAND_TYPE");
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
             return BlocklyType.BOOLEAN;
         }
         // Check if it's an equality or inequality operation
         if ( binary.getOp().equals(Binary.Op.EQ) || binary.getOp().equals(Binary.Op.NEQ) ) {
             // Check if both operands are of the same Type
-            if ( !tl.equals(tr) && !tl.equals(BlocklyType.VOID) && !tr.equals(BlocklyType.VOID) ) {
-                addError("INVALID_OPERAND_TYPE");
+            if ( !tl.equals(tr)
+                && !tl.equals(BlocklyType.VOID)
+                && !tr.equals(BlocklyType.VOID)
+                && !tl.equals(BlocklyType.NOTHING)
+                && !tr.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
             return BlocklyType.BOOLEAN;
         }
@@ -314,12 +316,12 @@ public class ExprlyTypechecker<T> {
             || binary.getOp().equals(Binary.Op.GTE)
             || binary.getOp().equals(Binary.Op.LTE) ) {
             // Check if the left operand is a Number Type
-            if ( !tl.equals(BlocklyType.NUMBER) && !tl.equals(BlocklyType.VOID) ) {
-                addError("INVALID_OPERAND_TYPE");
+            if ( !tl.equals(BlocklyType.NUMBER) && !tl.equals(BlocklyType.VOID) && !tl.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
             // Check if the right operand is a Number Type
-            if ( !tr.equals(BlocklyType.NUMBER) && !tr.equals(BlocklyType.VOID) ) {
-                addError("INVALID_OPERAND_TYPE");
+            if ( !tr.equals(BlocklyType.NUMBER) && !tr.equals(BlocklyType.VOID) && !tr.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
             }
             return BlocklyType.BOOLEAN;
         }
@@ -349,15 +351,13 @@ public class ExprlyTypechecker<T> {
                 }
             }
             for ( int k = 0; k < tList.size(); k++ ) {
-                // If it's a variable, store a warning to be able to recover later
-                if ( tList.get(k).equals(BlocklyType.VOID) ) {
-                    addError("UNDECLARED_VARIABLE");
-                } else if ( tList.get(k).equals(BlocklyType.NOTHING) ) {
-                    addError("UNEXPECTED_METHOD");
-                } else {
+                if ( tList.get(k).equals(BlocklyType.NOTHING) ) {
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+                    // variable errors are detected previously
+                } else if ( !tList.get(k).equals(BlocklyType.VOID) ) {
                     // If the types are different it's considered an error
                     if ( !tList.get(k).equals(t) ) {
-                        addError("INVALID_TYPE_FOR_LIST_ELEMENT");
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_TYPE_FOR_LIST_ELEMENT);
                     }
                 }
             }
@@ -383,7 +383,8 @@ public class ExprlyTypechecker<T> {
                 || t.equals(BlocklyType.ARRAY_STRING)
                 || t.equals(BlocklyType.ARRAY_CONNECTION)
                 || t.equals(BlocklyType.ARRAY_COLOUR)
-                || t.equals(BlocklyType.VOID) ) {
+                || t.equals(BlocklyType.VOID)
+                || t.equals(BlocklyType.NOTHING) ) {
                 return BlocklyType.ARRAY;
             }
         }
@@ -424,18 +425,16 @@ public class ExprlyTypechecker<T> {
         // Check that is only one
         BlocklyType t = BlocklyType.VOID;
         if ( args.size() != 1 ) {
-            this.errors.add("INVALID_ARGUMENT_NUMBER");
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
         }
         // Check that all the elements are numbers
         for ( Expr<T> e : args ) {
             t = checkAST(e);
-            if ( t.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-            } else if ( t.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( !t.equals(BlocklyType.ARRAY_NUMBER) && !checkAST(e).equals(BlocklyType.ARRAY) ) {
-                    addError("INVALID_ARGUMENT_TYPE");
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                 }
             }
         }
@@ -466,7 +465,7 @@ public class ExprlyTypechecker<T> {
      */
     private BlocklyType visitMathRandomFloatFunct(MathRandomFloatFunct<T> mathRandomFloatFunct) {
         if ( mathRandomFloatFunct.hasArgs() ) {
-            addError("INVALID_ARGUMENT_NUMBER");
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
         }
         return BlocklyType.NUMBER;
     }
@@ -552,7 +551,7 @@ public class ExprlyTypechecker<T> {
         // Check the number of parameters
         int argNumber = indexArgumentNumber(mode.get(0)) + indexArgumentNumber(mode.get(1)) + 1;
         if ( args.size() != argNumber ) {
-            addError("INVALID_ARGUMENT_NUMBER");
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
         }
 
         // Check that they're all type correct
@@ -561,11 +560,9 @@ public class ExprlyTypechecker<T> {
             if ( i == 0 ) {
                 t0 = t;
             }
-            if ( t.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-            } else if ( t.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( i == 0 ) {
                     if ( !(t.equals(BlocklyType.ARRAY)
                         || t.equals(BlocklyType.ARRAY_NUMBER)
@@ -573,11 +570,11 @@ public class ExprlyTypechecker<T> {
                         || t.equals(BlocklyType.ARRAY_STRING)
                         || t.equals(BlocklyType.ARRAY_CONNECTION)
                         || t.equals(BlocklyType.ARRAY_COLOUR)) ) {
-                        addError("INVALID_ARGUMENT_TYPE");
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                     }
                 } else {
                     if ( !t.equals(BlocklyType.NUMBER) ) {
-                        addError("INVALID_ARGUMENT_TYPE");
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                     }
                 }
             }
@@ -608,7 +605,7 @@ public class ExprlyTypechecker<T> {
         int argNumber = indexArgumentNumber(mode) + 1;
         // Check the number of parameters
         if ( args.size() != argNumber ) {
-            addError("INVALID_ARGUMENT_NUMBER");
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
         }
         // Check that they're all type correct
         for ( int i = 0; i < args.size(); i++ ) {
@@ -616,11 +613,9 @@ public class ExprlyTypechecker<T> {
             if ( i == 0 ) {
                 t0 = t;
             }
-            if ( t.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-            } else if ( t.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( i == 0 ) {
                     if ( !(t.equals(BlocklyType.ARRAY)
                         || t.equals(BlocklyType.ARRAY_NUMBER)
@@ -628,11 +623,11 @@ public class ExprlyTypechecker<T> {
                         || t.equals(BlocklyType.ARRAY_STRING)
                         || t.equals(BlocklyType.ARRAY_CONNECTION)
                         || t.equals(BlocklyType.ARRAY_COLOUR)) ) {
-                        addError("INVALID_ARGUMENT_TYPE");
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                     }
                 } else {
                     if ( !t.equals(BlocklyType.NUMBER) ) {
-                        addError("INVALID_ARGUMENT_TYPE");
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                     }
                 }
             }
@@ -666,19 +661,16 @@ public class ExprlyTypechecker<T> {
         int argNumber = indexArgumentNumber(mode) + 2;
         // Check the number of parameters
         if ( args.size() != argNumber ) {
-            addError("INVALID_ARGUMENT_NUMBER");
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
         }
         for ( int i = 0; i < args.size(); i++ ) {
             t = checkAST(args.get(i));
             if ( i == 0 ) {
                 t0 = t;
             }
-            if ( t.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-
-            } else if ( t.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( i == 0 ) {
                     if ( !(t0.equals(BlocklyType.ARRAY)
                         || t0.equals(BlocklyType.ARRAY_NUMBER)
@@ -686,11 +678,11 @@ public class ExprlyTypechecker<T> {
                         || t0.equals(BlocklyType.ARRAY_STRING)
                         || t0.equals(BlocklyType.ARRAY_CONNECTION)
                         || t0.equals(BlocklyType.ARRAY_COLOUR)) ) {
-                        addError("INVALID_ARGUMENT_TYPE");
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                     }
                 } else {
                     if ( !t.equals(BlocklyType.NUMBER) ) {
-                        addError("INVALID_ARGUMENT_TYPE");
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                     }
                 }
             }
@@ -711,7 +703,7 @@ public class ExprlyTypechecker<T> {
         t1 = BlocklyType.VOID;
         List<Expr<T>> args = listRepeat.getParam();
         if ( args.size() != 2 ) {
-            addError("INVALID_ARGUMENT_NUMBER");
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
         }
         for ( int i = 0; i < args.size(); i++ ) {
             t = checkAST(args.get(i));
@@ -721,14 +713,12 @@ public class ExprlyTypechecker<T> {
             if ( i == 1 ) {
                 t1 = t;
             }
-            if ( t.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-            } else if ( t.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( i == 1 ) {
                     if ( !t1.equals(BlocklyType.NUMBER) ) {
-                        addError("INVALID_ARGUMENT_TYPE");
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                     }
                 }
             }
@@ -760,7 +750,7 @@ public class ExprlyTypechecker<T> {
         FunctionNames fname = lengthOfIsEmptyFunct.getFunctName();
         List<Expr<T>> args = lengthOfIsEmptyFunct.getParam();
         if ( args.size() != 1 ) {
-            addError("INVALID_ARGUMENT_NUMBER");
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
         }
 
         for ( int i = 0; i < args.size(); i++ ) {
@@ -768,18 +758,16 @@ public class ExprlyTypechecker<T> {
             if ( i == 0 ) {
                 t0 = t;
             }
-            if ( t.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-            } else if ( t.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( !(t0.equals(BlocklyType.ARRAY)
                     || t0.equals(BlocklyType.ARRAY_NUMBER)
                     || t0.equals(BlocklyType.ARRAY_BOOLEAN)
                     || t0.equals(BlocklyType.ARRAY_STRING)
                     || t0.equals(BlocklyType.ARRAY_CONNECTION)
                     || t0.equals(BlocklyType.ARRAY_COLOUR)) ) {
-                    addError("INVALID_ARGUMENT_TYPE");
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                 }
             }
         }
@@ -896,18 +884,16 @@ public class ExprlyTypechecker<T> {
     private BlocklyType functionHelper(List<Expr<T>> args, int argSize, BlocklyType checkedType, BlocklyType expectedReturn) {
         BlocklyType t;
         if ( args.size() != argSize ) {
-            this.errors.add("INVALID_ARGUMENT_NUMBER");
+            addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
         }
         // Check that is a number type
         for ( Expr<T> e : args ) {
             t = checkAST(e);
-            if ( t.equals(BlocklyType.VOID) ) {
-                addError("UNDECLARED_VARIABLE");
-            } else if ( t.equals(BlocklyType.NOTHING) ) {
-                addError("UNEXPECTED_METHOD");
-            } else {
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( !t.equals(checkedType) ) {
-                    addError("INVALID_ARGUMENT_TYPE");
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
                 }
             }
         }
