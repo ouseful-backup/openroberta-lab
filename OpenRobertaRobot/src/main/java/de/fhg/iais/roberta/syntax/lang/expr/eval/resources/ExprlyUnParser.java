@@ -1,10 +1,23 @@
 package de.fhg.iais.roberta.syntax.lang.expr.eval.resources;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+
+import de.fhg.iais.roberta.exprly.generated.ExprlyLexer;
+import de.fhg.iais.roberta.exprly.generated.ExprlyParser;
+import de.fhg.iais.roberta.exprly.generated.ExprlyParser.ExpressionContext;
 import de.fhg.iais.roberta.inter.mode.general.IMode;
 import de.fhg.iais.roberta.mode.general.IndexLocation;
 import de.fhg.iais.roberta.mode.general.ListElementOperations;
@@ -68,6 +81,22 @@ public class ExprlyUnParser<T> {
     }
 
     /**
+     * Method to UnParse the expression in the class and remove redundant parenthese
+     *
+     * @return UnParsed expression
+     * @throws IOException
+     * @throws UnsupportedEncodingException
+     */
+    public String fullUnParse() {
+        this.UnParse();
+        try {
+            return this.removeRedundantParenthese();
+        } catch ( Exception e ) {
+            return getString();
+        }
+    }
+
+    /**
      * Method to UnParse the expression in the class
      * Note: The expression will have redundant parenthesis
      * Note: It only works reliably on semantically correct expressions,
@@ -79,6 +108,42 @@ public class ExprlyUnParser<T> {
         this.se = "";
         this.se += visitAST(this.e);
         return getString();
+    }
+
+    /**
+     * Method to remove redundant parenthese from the unparsed expression
+     *
+     * @return UnParsed expression
+     * @throws IOException
+     * @throws UnsupportedEncodingException
+     */
+    private String removeRedundantParenthese() throws UnsupportedEncodingException, IOException {
+        String red = this.se;
+        Stack<Integer> stack = new Stack<Integer>();
+        HashSet<ArrayList<Integer>> pairs = new HashSet<ArrayList<Integer>>();
+        for ( int k = 0; k < red.length(); k++ ) {
+            if ( red.charAt(k) == '(' ) {
+                stack.push(k);
+            } else if ( red.charAt(k) == ')' ) {
+                ArrayList<Integer> pair = new ArrayList<Integer>();
+                pair.add(stack.pop());
+                pair.add(k);
+                pairs.add(pair);
+            }
+        }
+        for ( ArrayList<Integer> p : pairs ) {
+            String test = red.substring(0, p.get(0)) + " " + red.substring(p.get(0) + 1, p.get(1)) + " " + red.substring(p.get(1) + 1, red.length());
+            ExprlyParser parser = mkParser(test);
+            ExprlyAST<T> eval = new ExprlyAST<>();
+            ExpressionContext expression = parser.expression();
+            if ( parser.getNumberOfSyntaxErrors() == 0 ) {
+                ExprlyUnParser<T> unparser = new ExprlyUnParser<T>(eval.visitExpression(expression));
+                if ( unparser.UnParse().equals(this.se) ) {
+                    red = test;
+                }
+            }
+        }
+        return red;
     }
 
     /**
@@ -440,6 +505,18 @@ public class ExprlyUnParser<T> {
         return s;
     }
 
+    /**
+     * Function to create the parser for the expression
+     */
+    private static ExprlyParser mkParser(String expr) throws UnsupportedEncodingException, IOException {
+        InputStream inputStream = new ByteArrayInputStream(expr.getBytes("UTF-8"));
+        ANTLRInputStream input = new ANTLRInputStream(inputStream);
+        ExprlyLexer lexer = new ExprlyLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ExprlyParser parser = new ExprlyParser(tokens);
+        return parser;
+    }
+
     // Fill the HashMap of Function Names
     static {
         HashMap<FunctionNames, String> names = new HashMap<FunctionNames, String>();
@@ -472,6 +549,7 @@ public class ExprlyUnParser<T> {
         names.put(FunctionNames.ROUNDUP, "roundUp");
         names.put(FunctionNames.ROUNDDOWN, "roundDown");
         names.put(FunctionNames.ROUND, "round");
+        names.put(FunctionNames.RANDOM, "randItem");
         fnames = Collections.unmodifiableMap(names);
     }
 

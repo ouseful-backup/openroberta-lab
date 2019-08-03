@@ -184,12 +184,15 @@ public class ExprlyTypechecker<T> {
         c.add(checkAST(rgbColor.getB()));
         c.add(checkAST(rgbColor.getA()));
 
-        for ( BlocklyType t : c ) {
+        for ( int k = 0; k < c.size(); k++ ) {
+            BlocklyType t = c.get(k);
             if ( t.equals(BlocklyType.NOTHING) ) {
                 addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
             } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( !t.equals(BlocklyType.NUMBER) ) {
-                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                    ExprlyUnParser<T> up =
+                        new ExprlyUnParser<T>(k == 0 ? rgbColor.getR() : k == 1 ? rgbColor.getG() : k == 2 ? rgbColor.getB() : rgbColor.getA());
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                 }
             }
         }
@@ -433,8 +436,9 @@ public class ExprlyTypechecker<T> {
             if ( t.equals(BlocklyType.NOTHING) ) {
                 addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
             } else if ( !t.equals(BlocklyType.VOID) ) {
-                if ( !t.equals(BlocklyType.ARRAY_NUMBER) && !checkAST(e).equals(BlocklyType.ARRAY) ) {
-                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                if ( !t.equals(BlocklyType.ARRAY_NUMBER) && !t.equals(BlocklyType.ARRAY) ) {
+                    ExprlyUnParser<T> up = new ExprlyUnParser<T>(e);
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                 }
             }
         }
@@ -570,11 +574,13 @@ public class ExprlyTypechecker<T> {
                         || t.equals(BlocklyType.ARRAY_STRING)
                         || t.equals(BlocklyType.ARRAY_CONNECTION)
                         || t.equals(BlocklyType.ARRAY_COLOUR)) ) {
-                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                        ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(i));
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                     }
                 } else {
                     if ( !t.equals(BlocklyType.NUMBER) ) {
-                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                        ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(i));
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                     }
                 }
             }
@@ -623,11 +629,13 @@ public class ExprlyTypechecker<T> {
                         || t.equals(BlocklyType.ARRAY_STRING)
                         || t.equals(BlocklyType.ARRAY_CONNECTION)
                         || t.equals(BlocklyType.ARRAY_COLOUR)) ) {
-                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                        ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(i));
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                     }
                 } else {
                     if ( !t.equals(BlocklyType.NUMBER) ) {
-                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                        ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(i));
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                     }
                 }
             }
@@ -678,11 +686,13 @@ public class ExprlyTypechecker<T> {
                         || t0.equals(BlocklyType.ARRAY_STRING)
                         || t0.equals(BlocklyType.ARRAY_CONNECTION)
                         || t0.equals(BlocklyType.ARRAY_COLOUR)) ) {
-                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                        ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(i));
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                     }
                 } else {
                     if ( !t.equals(BlocklyType.NUMBER) ) {
-                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                        ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(i));
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                     }
                 }
             }
@@ -718,7 +728,8 @@ public class ExprlyTypechecker<T> {
             } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( i == 1 ) {
                     if ( !t1.equals(BlocklyType.NUMBER) ) {
-                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                        ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(i));
+                        addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                     }
                 }
             }
@@ -767,7 +778,8 @@ public class ExprlyTypechecker<T> {
                     || t0.equals(BlocklyType.ARRAY_STRING)
                     || t0.equals(BlocklyType.ARRAY_CONNECTION)
                     || t0.equals(BlocklyType.ARRAY_COLOUR)) ) {
-                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                    ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(i));
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                 }
             }
         }
@@ -893,7 +905,8 @@ public class ExprlyTypechecker<T> {
                 addError(Key.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
             } else if ( !t.equals(BlocklyType.VOID) ) {
                 if ( !t.equals(checkedType) ) {
-                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE);
+                    ExprlyUnParser<T> up = new ExprlyUnParser<T>(e);
+                    addError(Key.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "expr", up.fullUnParse());
                 }
             }
         }
