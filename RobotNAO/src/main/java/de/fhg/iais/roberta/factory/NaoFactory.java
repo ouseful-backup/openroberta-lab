@@ -14,6 +14,8 @@ import de.fhg.iais.roberta.util.PluginProperties;
 import de.fhg.iais.roberta.visitor.codegen.NaoPythonVisitor;
 import de.fhg.iais.roberta.visitor.validate.AbstractProgramValidatorVisitor;
 import de.fhg.iais.roberta.visitor.validate.AbstractSimValidatorVisitor;
+import de.fhg.iais.roberta.visitor.validate.NaoBrickValidatorVisitor;
+import de.fhg.iais.roberta.visitor.validate.NaoSimValidatorVisitor;
 
 public class NaoFactory extends AbstractRobotFactory {
 
@@ -46,12 +48,18 @@ public class NaoFactory extends AbstractRobotFactory {
 
     @Override
     public AbstractSimValidatorVisitor getSimProgramCheckVisitor(Configuration brickConfiguration) {
-        return null;
+        //return null;
+
+        // TODO: Implement robot specific visit methods
+        return new NaoSimValidatorVisitor(brickConfiguration);
     }
 
     @Override
     public AbstractProgramValidatorVisitor getRobotProgramCheckVisitor(Configuration brickConfiguration) {
-        return null;
+        //return null;
+
+        // TODO: Implement robot specific visit methods
+        return new NaoBrickValidatorVisitor(brickConfiguration);
     }
 
     @Override
