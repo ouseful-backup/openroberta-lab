@@ -41,9 +41,9 @@ public class TcError {
             return this.key.getMsg();
         } else {
             String message = "";
-            String[] splitMessage = this.key.getMsg().split("[.{.}.");
+            String[] splitMessage = this.key.getMsg().split("[.{.}.]");
             for ( String s : splitMessage ) {
-                message += this.error.get(s) == null ? s : this.error.get(s);
+                message += this.error.get(s) == null ? s : "»" + this.error.get(s) + "«";
             }
             return message;
         }

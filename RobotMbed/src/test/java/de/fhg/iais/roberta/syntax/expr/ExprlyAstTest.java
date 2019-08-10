@@ -242,7 +242,7 @@ public class ExprlyAstTest {
         System.out.println("typeCheckEq Test:");
         List<TcError> errors = c.getErrors();
         for ( TcError s : errors ) {
-            System.out.println(s.getKey().getKey());
+            System.out.println(s.getError());
         }
         System.out.println("");
     }
@@ -259,7 +259,7 @@ public class ExprlyAstTest {
         System.out.println("typeCheckMathSingleFunctionCall Test:");
         List<TcError> errors = c.getErrors();
         for ( TcError s : errors ) {
-            System.out.println(s.getKey().getKey());
+            System.out.println(s.getError());
         }
         System.out.println("");
     }
@@ -276,7 +276,7 @@ public class ExprlyAstTest {
         System.out.println("typeCheckMathOnListFunct Test:");
         List<TcError> errors = c.getErrors();
         for ( TcError s : errors ) {
-            System.out.println(s.getKey().getKey());
+            System.out.println(s.getError());
         }
         System.out.println("");
     }
@@ -293,7 +293,7 @@ public class ExprlyAstTest {
         System.out.println("typeCheckMathOnListFunct1 Test:");
         List<TcError> errors = c.getErrors();
         for ( TcError s : errors ) {
-            System.out.println(s.getKey().getKey());
+            System.out.println(s.getError());
         }
         System.out.println("");
 
@@ -307,7 +307,7 @@ public class ExprlyAstTest {
         System.out.println("testRGB Test:");
         List<TcError> errors = c.getErrors();
         for ( TcError s : errors ) {
-            System.out.println(s.getKey().getKey());
+            System.out.println(s.getError());
         }
         System.out.println("");
 
