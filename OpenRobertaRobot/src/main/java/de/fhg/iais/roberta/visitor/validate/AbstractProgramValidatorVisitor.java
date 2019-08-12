@@ -42,6 +42,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.Unary;
 import de.fhg.iais.roberta.syntax.lang.expr.Var;
 import de.fhg.iais.roberta.syntax.lang.expr.VarDeclaration;
 import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.ExprlyTypechecker;
+import de.fhg.iais.roberta.syntax.lang.expr.eval.resources.TcError;
 import de.fhg.iais.roberta.syntax.lang.functions.GetSubFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.IndexOfFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.LengthOfIsEmptyFunct;
@@ -648,7 +649,7 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
     @Override
     public Void visitEvalExpr(EvalExpr<Void> evalExpr) {
         if ( evalExpr.hasSyntaxError() ) {
-            addError(Key.COMPILERWORKFLOW_ERROR_PROGRAM_NOT_FOUND.getKey(), evalExpr);
+            addError(Key.EXPRBLOCK_SYNTAX_ERROR.getKey(), evalExpr);
         } else {
             int i = 0;
             ArrayList<VarDeclaration<Void>> vars = this.getVisitedVars();
@@ -661,7 +662,11 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
             ExprlyTypechecker<Void> checker = new ExprlyTypechecker<>(evalExpr.getExpr(), BlocklyType.get(evalExpr.getType()), vars.subList(i, vars.size()));
             checker.check();
             if ( checker.getNumErrors() > 0 ) {
-                addError(Key.COMPILERWORKFLOW_ERROR_PROGRAM_NOT_FOUND.getKey(), evalExpr);
+                String error = "ORA_EXPRBLOCK_TYPECHECK_ERROR\n";
+                for ( TcError e : checker.getErrors() ) {
+                    error += e.getError() + "\n";
+                }
+                addError(error, evalExpr);
             }
         }
         return null;

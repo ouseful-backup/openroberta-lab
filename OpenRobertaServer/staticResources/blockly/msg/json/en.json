@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2019-08-08 23:56:20.477012",
+		"lastupdated": "2019-08-11 19:49:25.875837",
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
@@ -819,15 +819,8 @@
 	"ORA_ROBOT_SET_SUCCESS": "Switched to robot system »$«!",
 	"ORA_ROBOT_DOES_NOT_EXIST": "It seems that we do not support the desired robot system!<br>Please choose another one.",
 	"ORA_EXPRBLOCK_PARSE_ERROR": "Could not parse the expression.",
+	"ORA_EXPRBLOCK_SYNTAX_ERROR": "Syntax error in expression!",
 	"ORA_EXPRBLOCK_TYPECHECK_ERROR": "Errors where produced when typecheking the expression.",
-	"ORA_EXPRBLOCK_TYPECHECK_ERROR_SYNTAX_ERROR": "Syntax error in expression!",
-	"ORA_EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE": "Invalid type of operand in expression!",
-	"ORA_EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_RETURN_TYPE": "Wrong type of return value from expression!",
-	"ORA_EXPRBLOCK_TYPECHECK_ERROR_INVALID_TYPE_FOR_LIST_ELEMENT": "All elements on the list must have the same type.",
-	"ORA_EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER": "Wrong number of arguents in function call (Check help for more info on the arguments of the function).",
-	"ORA_EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE": "The expression »$« has the wrong type of argument in function call.",
-	"ORA_EXPRBLOCK_TYPECHECK_ERROR_UNDECLARED_VARIABLE": "Variable »$« not declared",
-	"ORA_EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD": "You cannot use void methods in that expression.",
 	"CONFIGURATION_ERROR_SENSOR_MISSING": "This sensor is not set to the port!",
 	"CONFIGURATION_ERROR_ACTOR_MISSING": "This actuator is not set to the port!",
 	"CONFIGURATION_ERROR_SENSOR_WRONG": "Connected wrong sensor to the given port!",
