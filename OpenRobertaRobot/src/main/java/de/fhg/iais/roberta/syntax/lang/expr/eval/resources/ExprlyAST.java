@@ -16,6 +16,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.Binary;
 import de.fhg.iais.roberta.syntax.lang.expr.BoolConst;
 import de.fhg.iais.roberta.syntax.lang.expr.ColorConst;
 import de.fhg.iais.roberta.syntax.lang.expr.ConnectConst;
+import de.fhg.iais.roberta.syntax.lang.expr.EmptyExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
 import de.fhg.iais.roberta.syntax.lang.expr.ExprList;
 import de.fhg.iais.roberta.syntax.lang.expr.FunctionExpr;
@@ -45,6 +46,14 @@ import de.fhg.iais.roberta.syntax.lang.functions.TextPrintFunct;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
 
 public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
+
+    /**
+     * @return AST instance of null const
+     */
+    @Override
+    public NullConst<V> visitNullConst(ExprlyParser.NullConstContext ctx) {
+        return NullConst.make();
+    }
 
     /**
      * @return AST instance of a color
@@ -192,6 +201,7 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
             }
         }
 
+        // check the function name and return the corresponfing one
         if ( f.equals("randInt") ) {
             return FunctionExpr.make(MathRandomIntFunct.make(args));
         }
@@ -350,7 +360,7 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
         if ( f.equals("print") ) {
             return FunctionExpr.make(TextPrintFunct.make(args));
         }
-        if ( f.equals("append") ) {
+        if ( f.equals("appendText") ) {
             ExprList<V> args0 = ExprList.make();
             for ( Expr<V> e : args ) {
                 args0.addExpr(e);
@@ -366,11 +376,16 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
         }
         if ( f.equals("getRGB") ) {
             if ( args.size() == 3 ) {
-                return RgbColor.make(args.get(0), args.get(1), args.get(2), NumConst.make(0));
+                return RgbColor.make(args.get(0), args.get(1), args.get(2), EmptyExpr.make(BlocklyType.NUMBER_INT));
             } else if ( args.size() == 4 ) {
                 return RgbColor.make(args.get(0), args.get(1), args.get(2), args.get(3));
             } else {
-                return NullConst.make();
+                return RgbColor
+                    .make(
+                        EmptyExpr.make(BlocklyType.NUMBER_INT),
+                        EmptyExpr.make(BlocklyType.NUMBER_INT),
+                        EmptyExpr.make(BlocklyType.NUMBER_INT),
+                        EmptyExpr.make(BlocklyType.NUMBER_INT));
             }
         }
         try {

@@ -274,7 +274,7 @@ public class ExprlyUnParser<T> {
      * @return Return Type of function
      */
     public String visitMathNumPropFunct(MathNumPropFunct<T> mathNumPropFunct) {
-        return ExprlyUnParser.fnames.get(mathNumPropFunct.getFunctName()) + "(" + visitAST(mathNumPropFunct.getParam().get(0)) + ")";
+        return ExprlyUnParser.fnames.get(mathNumPropFunct.getFunctName()) + "(" + paramList(mathNumPropFunct.getParam()) + ")";
 
     }
 
@@ -285,7 +285,7 @@ public class ExprlyUnParser<T> {
      * @return Textual representation of function
      */
     public String visitMathOnListFunct(MathOnListFunct<T> mathOnListFunct) {
-        return ExprlyUnParser.fnames.get(mathOnListFunct.getFunctName()) + "(" + visitAST(mathOnListFunct.getParam().get(0)) + ")";
+        return ExprlyUnParser.fnames.get(mathOnListFunct.getFunctName()) + "(" + paramList(mathOnListFunct.getParam()) + ")";
     }
 
     /**
@@ -303,9 +303,7 @@ public class ExprlyUnParser<T> {
      * @return Textual representation of function
      */
     public String visitMathRandomIntFunct(MathRandomIntFunct<T> mathRandomIntFunct) {
-        // Get arguments
-        List<Expr<T>> args = mathRandomIntFunct.getParam();
-        return "randInt" + "(" + visitAST(args.get(0)) + "," + visitAST(args.get(1)) + ")";
+        return "randInt" + "(" + paramList(mathRandomIntFunct.getParam()) + ")";
     }
 
     /**
@@ -430,23 +428,19 @@ public class ExprlyUnParser<T> {
     }
 
     private String visitMathConstrainFunct(MathConstrainFunct<T> mathConstrainFunct) {
-        List<Expr<T>> args = mathConstrainFunct.getParam();
-        return "constrain(" + visitAST(args.get(0)) + "," + visitAST(args.get(1)) + ")";
+        return "constrain(" + paramList(mathConstrainFunct.getParam()) + ")";
     }
 
     private String visitTextJoinFunct(TextJoinFunct<T> textJoinFunct) {
-        List<Expr<T>> args = textJoinFunct.getParam().get();
-        return "cat(" + visitAST(args.get(0)) + "," + visitAST(args.get(1)) + ")";
+        return "cat(" + paramList(textJoinFunct.getParam().get()) + ")";
     }
 
     private String visitTextPrintFunct(TextPrintFunct<T> textPrintFunct) {
-        List<Expr<T>> args = textPrintFunct.getParam();
-        return "print(" + visitAST(args.get(0)) + ")";
+        return "print(" + paramList(textPrintFunct.getParam()) + ")";
     }
 
     private String visitListRepeat(ListRepeat<T> listRepeat) {
-        List<Expr<T>> args = listRepeat.getParam();
-        return "repeatList(" + args.get(0) + "," + args.get(1) + ")";
+        return "repeatList(" + paramList(listRepeat.getParam()) + ")";
     }
 
     private String visitListGetIndex(ListGetIndex<T> listGetIndex) {
@@ -503,6 +497,20 @@ public class ExprlyUnParser<T> {
             s += visitAST(args.get(k)) + (k == args.size() - 1 ? ")" : ",");
         }
         return s;
+    }
+
+    /**
+     * Function that builds a string representation of the arguments of a function
+     *
+     * @param param list
+     * @return textual representation of the args
+     */
+    public String paramList(List<Expr<T>> args) {
+        String t = "";
+        for ( Expr<T> e : args ) {
+            t += visitAST(e) + ",";
+        }
+        return t.substring(0, t.length() - 1);
     }
 
     /**

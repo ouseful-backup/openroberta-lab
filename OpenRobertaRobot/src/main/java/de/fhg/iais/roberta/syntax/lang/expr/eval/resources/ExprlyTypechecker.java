@@ -1,8 +1,13 @@
 package de.fhg.iais.roberta.syntax.lang.expr.eval.resources;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import de.fhg.iais.roberta.inter.mode.general.IIndexLocation;
 import de.fhg.iais.roberta.inter.mode.general.IMode;
@@ -12,11 +17,13 @@ import de.fhg.iais.roberta.syntax.lang.expr.Binary;
 import de.fhg.iais.roberta.syntax.lang.expr.BoolConst;
 import de.fhg.iais.roberta.syntax.lang.expr.ColorConst;
 import de.fhg.iais.roberta.syntax.lang.expr.ConnectConst;
+import de.fhg.iais.roberta.syntax.lang.expr.EmptyExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
 import de.fhg.iais.roberta.syntax.lang.expr.ExprList;
 import de.fhg.iais.roberta.syntax.lang.expr.FunctionExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.ListCreate;
 import de.fhg.iais.roberta.syntax.lang.expr.MathConst;
+import de.fhg.iais.roberta.syntax.lang.expr.NullConst;
 import de.fhg.iais.roberta.syntax.lang.expr.NumConst;
 import de.fhg.iais.roberta.syntax.lang.expr.RgbColor;
 import de.fhg.iais.roberta.syntax.lang.expr.StringConst;
@@ -44,9 +51,11 @@ public class ExprlyTypechecker<T> {
 
     private final LinkedList<TcError> errors;
     private final Phrase<T> ast;
+    private final String robotName;
     private BlocklyType resultType;
     private final BlocklyType expectedResultType;
     private final List<VarDeclaration<T>> vars;
+    private static Map<String, Set<String>> okMap;
 
     /**
      * Class constructor, creates an instance of {@link ExprlyTypechecker} for the phrase passed as parameter
@@ -58,6 +67,7 @@ public class ExprlyTypechecker<T> {
         this.expectedResultType = rt;
         this.ast = ast;
         this.vars = new ArrayList<>();
+        this.robotName = null;
     }
 
     public ExprlyTypechecker(Phrase<T> ast, BlocklyType rt, List<VarDeclaration<T>> vars) {
@@ -65,6 +75,15 @@ public class ExprlyTypechecker<T> {
         this.expectedResultType = rt;
         this.ast = ast;
         this.vars = vars;
+        this.robotName = null;
+    }
+
+    public ExprlyTypechecker(Phrase<T> ast, BlocklyType rt, List<VarDeclaration<T>> vars, String robotName) {
+        this.errors = new LinkedList<>();
+        this.expectedResultType = rt;
+        this.ast = ast;
+        this.vars = vars;
+        this.robotName = robotName;
     }
 
     /**
@@ -169,6 +188,12 @@ public class ExprlyTypechecker<T> {
      * @return Type of block
      */
     private BlocklyType visitColorConst(ColorConst<T> colorConst) {
+        Map<String, Set<String>> map = okMap;
+        if ( this.robotName != null ) {
+            if ( !okMap.get(this.robotName).contains(colorConst.getHexValueAsString()) ) {
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_COLOR, "COLOR", colorConst.getHexValueAsString());
+            }
+        }
         return colorConst.getVarType();
     }
 
@@ -177,6 +202,20 @@ public class ExprlyTypechecker<T> {
      * @return Type of block
      */
     private BlocklyType visitRgbColor(RgbColor<T> rgbColor) {
+        if ( this.robotName != null ) {
+            if ( !okMap.get(this.robotName).contains("rgb") && !okMap.get(this.robotName).contains("rgba") ) {
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_ILLEGAL_RGB);
+                return rgbColor.getVarType();
+            }
+            if ( rgbColor.getR() instanceof EmptyExpr<?> ) {
+                addError(
+                    okMap.get(this.robotName).contains("rgb")
+                        ? EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_RGB
+                        : EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_RGBA);
+                return rgbColor.getVarType();
+            }
+        }
+
         List<BlocklyType> c = new ArrayList<>(4);
         c.add(checkAST(rgbColor.getR()));
         c.add(checkAST(rgbColor.getG()));
@@ -879,7 +918,21 @@ public class ExprlyTypechecker<T> {
         if ( ast instanceof MathPowerFunct<?> ) {
             return visitMathPowerFunct((MathPowerFunct<T>) ast);
         }
+        if ( ast instanceof NullConst<?> ) {
+            return visitNullConst((NullConst<T>) ast);
+        }
+        if ( ast instanceof EmptyExpr<?> ) {
+            return visitEmptyExpr((EmptyExpr<T>) ast);
+        }
         throw new UnsupportedOperationException("Expression " + ast.toString() + "cannot be checked");
+    }
+
+    private BlocklyType visitEmptyExpr(EmptyExpr<T> emptyExpr) {
+        return BlocklyType.VOID;
+    }
+
+    private BlocklyType visitNullConst(NullConst<T> nullConst) {
+        return BlocklyType.VOID;
     }
 
     // Helper functions
@@ -927,4 +980,134 @@ public class ExprlyTypechecker<T> {
         throw new IllegalArgumentException("Illegal Index Mode");
     }
 
+    // Fill the HashMap color sets
+    static {
+        HashMap<String, HashSet<String>> map = new HashMap<String, HashSet<String>>();
+        HashSet<String> wedo = new HashSet<String>();
+        HashSet<String> ev3 = new HashSet<String>();
+        HashSet<String> nxt = new HashSet<String>();
+        HashSet<String> vorwerk = new HashSet<String>();
+        HashSet<String> microbit = new HashSet<String>();
+        HashSet<String> botnroll = new HashSet<String>();
+        HashSet<String> nao = new HashSet<String>();
+        HashSet<String> bob3 = new HashSet<String>();
+        HashSet<String> arduino = new HashSet<String>();
+        HashSet<String> sensebox = new HashSet<String>();
+        HashSet<String> mbot = new HashSet<String>();
+        HashSet<String> calliope = new HashSet<String>();
+
+        wedo.add("#FF1493");
+        wedo.add("#800080");
+        wedo.add("#4876FF");
+        wedo.add("#00FFFF");
+        wedo.add("#90EE90");
+        wedo.add("#008000");
+        wedo.add("#FFFF00");
+        wedo.add("#FFA500");
+        wedo.add("#FF0000");
+        wedo.add("#FFFFFE");
+        wedo.add("#FFFFFF");
+        map.put("wedo", wedo);
+
+        ev3.add("#585858");
+        ev3.add("#000000");
+        ev3.add("#0057A6");
+        ev3.add("#00642E");
+        ev3.add("#F7D117");
+        ev3.add("#B30006");
+        ev3.add("#FFFFFF");
+        ev3.add("#532115");
+        map.put("ev3", ev3);
+
+        nxt.add("#585858");
+        nxt.add("#000000");
+        nxt.add("#0057A6");
+        nxt.add("#00642E");
+        nxt.add("#F7D117");
+        nxt.add("#B30006");
+        nxt.add("#FFFFFF");
+        map.put("nxt", nxt);
+
+        map.put("vorwerk", vorwerk);
+        map.put("microbit", microbit);
+
+        botnroll.add("#FFFFFF");
+        map.put("botnroll", botnroll);
+
+        nao.add("#FF0000");
+        nao.add("rgb");
+        map.put("nao", nao);
+
+        bob3.add("#DD4422");
+        bob3.add("#0000FF");
+        bob3.add("#00FF00");
+        bob3.add("#FFFF00");
+        bob3.add("#FF0000");
+        bob3.add("#FFFFFF");
+        bob3.add("#6633AA");
+        bob3.add("#FF0088");
+        bob3.add("#00FFFF");
+        bob3.add("#FF8800");
+        bob3.add("#FF00FF");
+        bob3.add("#77FFDD");
+        bob3.add("#FF7755");
+        bob3.add("#6699EE");
+        bob3.add("#4488AA");
+        bob3.add("#4466EE");
+        bob3.add("#228822");
+        bob3.add("#55FF99");
+        bob3.add("#000000");
+        map.put("bob3", bob3);
+
+        arduino.add("#999999");
+        arduino.add("#CC0000");
+        arduino.add("#FF6600");
+        arduino.add("#FFCC33");
+        arduino.add("#33CC00");
+        arduino.add("#00CCCC");
+        arduino.add("#3366FF");
+        arduino.add("#CC33CC");
+        arduino.add("#FFFFFF");
+        arduino.add("#000000");
+        arduino.add("rgb");
+        map.put("arduino", arduino);
+
+        sensebox.add("#999999");
+        sensebox.add("#CC0000");
+        sensebox.add("#FF6600");
+        sensebox.add("#FFCC33");
+        sensebox.add("#33CC00");
+        sensebox.add("#00CCCC");
+        sensebox.add("#3366FF");
+        sensebox.add("#CC33CC");
+        sensebox.add("#FFFFFF");
+        sensebox.add("rgb");
+        map.put("sensebox", sensebox);
+
+        mbot.add("#999999");
+        mbot.add("#CC0000");
+        mbot.add("#FF6600");
+        mbot.add("#FFCC33");
+        mbot.add("#33CC00");
+        mbot.add("#00CCCC");
+        mbot.add("#3366FF");
+        mbot.add("#CC33CC");
+        mbot.add("#FFFFFF");
+        mbot.add("rgb");
+        map.put("mbot", mbot);
+
+        calliope.add("#999999");
+        calliope.add("#CC0000");
+        calliope.add("#FF6600");
+        calliope.add("#FFCC33");
+        calliope.add("#33CC00");
+        calliope.add("#00CCCC");
+        calliope.add("#3366FF");
+        calliope.add("#CC33CC");
+        calliope.add("#FF0000");
+        calliope.add("rgba");
+        map.put("calliope", calliope);
+
+        okMap = Collections.unmodifiableMap(map);
+    }
 }

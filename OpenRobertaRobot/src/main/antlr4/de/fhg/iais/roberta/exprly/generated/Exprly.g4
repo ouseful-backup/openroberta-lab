@@ -2,7 +2,8 @@ grammar Exprly;
  
 expression: expr;
 
-expr     : CONST                                                     # MathConst
+expr     : NULL                                                      # NullConst
+         | CONST                                                     # MathConst
          | VAR                                                       # VarName
          | literal                                                   # LiteralExp
          | connExpr                                                  # ConnExp
@@ -106,7 +107,7 @@ FNAME   :  'sin'
         |  'subListFromEndToEnd'
         |  'subListFromEndToLast'
         |  'print'
-        |  'cat'
+        |  'appendText'
         |  'constrain'
         |  'getRGB'
         ;
@@ -118,7 +119,7 @@ CONST   :  'phi'
         |  'sqrt_1_2'
         |  'inf'
         ;
-
+NULL    : 'null';
 
 INT     :    ('0'..'9')+;
 

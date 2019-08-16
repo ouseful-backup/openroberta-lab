@@ -651,6 +651,7 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
         if ( evalExpr.hasSyntaxError() ) {
             addError(Key.EXPRBLOCK_SYNTAX_ERROR.getKey(), evalExpr);
         } else {
+            // Get the declared variables
             int i = 0;
             ArrayList<VarDeclaration<Void>> vars = this.getVisitedVars();
             for ( int k = 1; k < vars.size(); k++ ) {
@@ -659,7 +660,20 @@ public abstract class AbstractProgramValidatorVisitor extends AbstractCollectorV
                     break;
                 }
             }
-            ExprlyTypechecker<Void> checker = new ExprlyTypechecker<>(evalExpr.getExpr(), BlocklyType.get(evalExpr.getType()), vars.subList(i, vars.size()));
+
+            // Get the robot name to check robot specific blocks
+            String name = this.robotConfiguration.getRobotName();
+            if ( name.contains("ev3") ) {
+                name = "ev3";
+            } else if ( name.equals("uno") || name.equals("nano") || name.equals("mega") ) {
+                name = "arduino";
+            } else if ( name.contains("calliope") ) {
+                name = "calliope";
+            }
+
+            // Check
+            ExprlyTypechecker<Void> checker =
+                new ExprlyTypechecker<>(evalExpr.getExpr(), BlocklyType.get(evalExpr.getType()), vars.subList(i, vars.size()), name);
             checker.check();
             if ( checker.getNumErrors() > 0 ) {
                 String error = "ORA_EXPRBLOCK_TYPECHECK_ERROR\n";
