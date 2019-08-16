@@ -30,6 +30,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.Unary;
 import de.fhg.iais.roberta.syntax.lang.expr.Var;
 import de.fhg.iais.roberta.syntax.lang.functions.FunctionNames;
 import de.fhg.iais.roberta.syntax.lang.functions.GetSubFunct;
+import de.fhg.iais.roberta.syntax.lang.functions.IndexOfFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.LengthOfIsEmptyFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.ListGetIndex;
 import de.fhg.iais.roberta.syntax.lang.functions.ListRepeat;
@@ -236,7 +237,12 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
         if ( f.equals("lengthOf") ) {
             return FunctionExpr.make(LengthOfIsEmptyFunct.make("lists_length", args));
         }
-
+        if ( f.equals("indexOfFirst") ) {
+            return FunctionExpr.make(IndexOfFunct.make(IndexLocation.FIRST, args));
+        }
+        if ( f.equals("indexOfLast") ) {
+            return FunctionExpr.make(IndexOfFunct.make(IndexLocation.LAST, args));
+        }
         if ( f.contains("setIndex") ) {
             if ( f.equals("setIndex") ) {
                 return FunctionExpr.make(ListSetIndex.make(ListElementOperations.SET, IndexLocation.FROM_START, args));

@@ -32,6 +32,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.Var;
 import de.fhg.iais.roberta.syntax.lang.expr.VarDeclaration;
 import de.fhg.iais.roberta.syntax.lang.functions.FunctionNames;
 import de.fhg.iais.roberta.syntax.lang.functions.GetSubFunct;
+import de.fhg.iais.roberta.syntax.lang.functions.IndexOfFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.LengthOfIsEmptyFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.ListGetIndex;
 import de.fhg.iais.roberta.syntax.lang.functions.ListRepeat;
@@ -61,6 +62,24 @@ public class ExprlyTypechecker<T> {
      * Class constructor, creates an instance of {@link ExprlyTypechecker} for the phrase passed as parameter
      *
      * @param Phrase that will be checked
+     * @param type of expected return type
+     * @param list of already declared variables
+     * @param name of robot
+     **/
+    public ExprlyTypechecker(Phrase<T> ast, BlocklyType rt, List<VarDeclaration<T>> vars, String robotName) {
+        this.errors = new LinkedList<>();
+        this.expectedResultType = rt;
+        this.ast = ast;
+        this.vars = vars;
+        this.robotName = robotName;
+    }
+
+    /**
+     * Class constructor, creates an instance of {@link ExprlyTypechecker} for the phrase passed as parameter.
+     * This constructor is used for testing purposes
+     *
+     * @param Phrase that will be checked
+     * @param Expected return type
      **/
     public ExprlyTypechecker(Phrase<T> ast, BlocklyType rt) {
         this.errors = new LinkedList<>();
@@ -68,22 +87,6 @@ public class ExprlyTypechecker<T> {
         this.ast = ast;
         this.vars = new ArrayList<>();
         this.robotName = null;
-    }
-
-    public ExprlyTypechecker(Phrase<T> ast, BlocklyType rt, List<VarDeclaration<T>> vars) {
-        this.errors = new LinkedList<>();
-        this.expectedResultType = rt;
-        this.ast = ast;
-        this.vars = vars;
-        this.robotName = null;
-    }
-
-    public ExprlyTypechecker(Phrase<T> ast, BlocklyType rt, List<VarDeclaration<T>> vars, String robotName) {
-        this.errors = new LinkedList<>();
-        this.expectedResultType = rt;
-        this.ast = ast;
-        this.vars = vars;
-        this.robotName = robotName;
     }
 
     /**
@@ -924,7 +927,45 @@ public class ExprlyTypechecker<T> {
         if ( ast instanceof EmptyExpr<?> ) {
             return visitEmptyExpr((EmptyExpr<T>) ast);
         }
+        if ( ast instanceof IndexOfFunct<?> ) {
+            return visitIndexOfFunct((IndexOfFunct<T>) ast);
+        }
+
         throw new UnsupportedOperationException("Expression " + ast.toString() + "cannot be checked");
+    }
+
+    private BlocklyType visitIndexOfFunct(IndexOfFunct<T> indexOfFunct) {
+        BlocklyType t, t1;
+        List<Expr<T>> args = indexOfFunct.getParam();
+        if ( args.size() != 2 ) {
+            addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER);
+            return BlocklyType.NUMBER;
+        } else {
+            t = checkAST(args.get(0));
+            t1 = checkAST(args.get(1));
+            if ( t.equals(BlocklyType.NOTHING) ) {
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+            } else if ( !t.equals(BlocklyType.VOID) ) {
+                if ( !(t.equals(BlocklyType.ARRAY)
+                    || t.equals(BlocklyType.ARRAY_NUMBER)
+                    || t.equals(BlocklyType.ARRAY_BOOLEAN)
+                    || t.equals(BlocklyType.ARRAY_STRING)
+                    || t.equals(BlocklyType.ARRAY_CONNECTION)
+                    || t.equals(BlocklyType.ARRAY_COLOUR)) ) {
+                    ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(0));
+                    addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "EXPR", up.fullUnParse());
+                } else if ( t.equals(BlocklyType.ARRAY_NUMBER) && !t1.equals(BlocklyType.NUMBER)
+                    || t.equals(BlocklyType.ARRAY_BOOLEAN) && !t1.equals(BlocklyType.BOOLEAN)
+                    || t.equals(BlocklyType.ARRAY_STRING) && !t1.equals(BlocklyType.STRING)
+                    || t.equals(BlocklyType.ARRAY_CONNECTION) && !t1.equals(BlocklyType.CONNECTION)
+                    || t.equals(BlocklyType.ARRAY_COLOUR) && !t1.equals(BlocklyType.COLOR) ) {
+                    ExprlyUnParser<T> up = new ExprlyUnParser<T>(args.get(1));
+                    addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "EXPR", up.fullUnParse());
+                }
+                return BlocklyType.NUMBER;
+            }
+            return BlocklyType.VOID;
+        }
     }
 
     private BlocklyType visitEmptyExpr(EmptyExpr<T> emptyExpr) {
@@ -968,7 +1009,7 @@ public class ExprlyTypechecker<T> {
     /**
      * Function to get number of expected parameters of a list function given a IMode
      *
-     * @param index pode
+     * @param index mode
      * @return number of parameters the mode adds to the block
      */
     private int indexArgumentNumber(IMode mode) {
@@ -1007,6 +1048,7 @@ public class ExprlyTypechecker<T> {
         wedo.add("#FF0000");
         wedo.add("#FFFFFE");
         wedo.add("#FFFFFF");
+        wedo.add("noList");
         map.put("wedo", wedo);
 
         ev3.add("#585858");
@@ -1026,6 +1068,8 @@ public class ExprlyTypechecker<T> {
         nxt.add("#F7D117");
         nxt.add("#B30006");
         nxt.add("#FFFFFF");
+        nxt.add("noListRepeat");
+        nxt.add("noIndexOf");
         map.put("nxt", nxt);
 
         map.put("vorwerk", vorwerk);
@@ -1106,6 +1150,7 @@ public class ExprlyTypechecker<T> {
         calliope.add("#CC33CC");
         calliope.add("#FF0000");
         calliope.add("rgba");
+        calliope.add("noListRepeat");
         map.put("calliope", calliope);
 
         okMap = Collections.unmodifiableMap(map);

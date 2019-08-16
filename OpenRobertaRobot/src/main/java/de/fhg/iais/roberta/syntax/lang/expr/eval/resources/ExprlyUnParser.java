@@ -26,11 +26,13 @@ import de.fhg.iais.roberta.syntax.lang.expr.Binary;
 import de.fhg.iais.roberta.syntax.lang.expr.BoolConst;
 import de.fhg.iais.roberta.syntax.lang.expr.ColorConst;
 import de.fhg.iais.roberta.syntax.lang.expr.ConnectConst;
+import de.fhg.iais.roberta.syntax.lang.expr.EmptyExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.Expr;
 import de.fhg.iais.roberta.syntax.lang.expr.ExprList;
 import de.fhg.iais.roberta.syntax.lang.expr.FunctionExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.ListCreate;
 import de.fhg.iais.roberta.syntax.lang.expr.MathConst;
+import de.fhg.iais.roberta.syntax.lang.expr.NullConst;
 import de.fhg.iais.roberta.syntax.lang.expr.NumConst;
 import de.fhg.iais.roberta.syntax.lang.expr.RgbColor;
 import de.fhg.iais.roberta.syntax.lang.expr.StringConst;
@@ -38,6 +40,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.Unary;
 import de.fhg.iais.roberta.syntax.lang.expr.Var;
 import de.fhg.iais.roberta.syntax.lang.functions.FunctionNames;
 import de.fhg.iais.roberta.syntax.lang.functions.GetSubFunct;
+import de.fhg.iais.roberta.syntax.lang.functions.IndexOfFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.LengthOfIsEmptyFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.ListGetIndex;
 import de.fhg.iais.roberta.syntax.lang.functions.ListRepeat;
@@ -419,7 +422,34 @@ public class ExprlyUnParser<T> {
         if ( ast instanceof MathPowerFunct<?> ) {
             return visitMathPowerFunct((MathPowerFunct<T>) ast);
         }
+        if ( ast instanceof NullConst<?> ) {
+            return visitNullConst((NullConst<T>) ast);
+        }
+        if ( ast instanceof EmptyExpr<?> ) {
+            return visitEmptyExpr((EmptyExpr<T>) ast);
+        }
+        if ( ast instanceof IndexOfFunct<?> ) {
+            return visitIndexOfFunct((IndexOfFunct<T>) ast);
+        }
         throw new UnsupportedOperationException("Expression " + ast.toString() + "cannot be checked");
+    }
+
+    private String visitIndexOfFunct(IndexOfFunct<T> indexOfFunct) {
+        List<Expr<T>> args = indexOfFunct.getParam();
+        if ( indexOfFunct.getLocation().equals(IndexLocation.FIRST) ) {
+            return "indexOfFirst(" + paramList(args) + ")";
+        } else if ( indexOfFunct.getLocation().equals(IndexLocation.LAST) ) {
+
+        }
+        throw new UnsupportedOperationException("Not supported Index mode for IndexOfFunct");
+    }
+
+    private String visitEmptyExpr(EmptyExpr<T> emptyExpr) {
+        return "";
+    }
+
+    private String visitNullConst(NullConst<T> nullConst) {
+        return "null";
     }
 
     private String visitMathPowerFunct(MathPowerFunct<T> mathPowerFunct) {
