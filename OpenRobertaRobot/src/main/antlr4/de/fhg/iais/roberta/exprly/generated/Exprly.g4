@@ -136,7 +136,7 @@ BOOL    :  'true' | 'false';
 COLOR   :  '#' HEX HEX HEX HEX HEX HEX;
 HEX     :  ('A'..'F'|'0'..'9');
 
-VAR     :  ('a'..'z')('a'..'z'|'0'..'9'|'_')*;
+VAR     :  ('a'..'z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 STR     :  ('a'..'z'|'A'..'Z'|'0'..'9')+;
 
 AND     :   '&&';

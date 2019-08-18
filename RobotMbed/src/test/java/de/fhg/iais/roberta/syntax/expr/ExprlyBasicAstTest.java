@@ -30,12 +30,12 @@ import de.fhg.iais.roberta.visitor.codegen.CalliopeCppVisitor;
 import de.fhg.iais.roberta.visitor.codegen.MicrobitPythonVisitor;
 
 public class ExprlyBasicAstTest {
-    private static final Logger LOG = LoggerFactory.getLogger(ExprlyAstTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExprlyBasicAstTest.class);
     private final GenericHelperForXmlTest h = new GenericHelperForXmlTest();
 
     /**
      * The purpose of this set of test is to try out simple expressions for the exprBlock
-     * Check that the AST is ok.<br>
+     * and to check that the AST is ok. Every expression of the grammar is tested here.
      */
 
     @Test
@@ -375,6 +375,16 @@ public class ExprlyBasicAstTest {
         Expr<Void> e = expr2AST("constrain(1,2,3)");
         String t = "FunctionExpr [MathConstrainFunct [[NumConst [1], NumConst [2], NumConst [3]]]]";
         test(e, t, BlocklyType.NUMBER);
+    }
+
+    @Test
+    public void testFromXml() throws Exception {
+        Phrase<Void> ast = this.h.generateAST("/expressionblock/eval_expr_1add2.xml");
+        String t = "Binary [ADD, NumConst [1], NumConst [2]]";
+        Assert.assertEquals(t, ast.toString());
+        checkCode((Expr<Void>) ast);
+        System.out.println("");
+
     }
 
     /**

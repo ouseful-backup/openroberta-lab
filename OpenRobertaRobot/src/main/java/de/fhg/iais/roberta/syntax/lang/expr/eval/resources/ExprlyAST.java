@@ -71,6 +71,8 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
     public Binary<V> visitBinaryB(@NotNull ExprlyParser.BinaryBContext ctx) throws UnsupportedOperationException {
         Expr<V> p = visit(ctx.expr(0));
         Expr<V> q = visit(ctx.expr(1));
+        p.setReadOnly();
+        q.setReadOnly();
         if ( ctx.op.getType() == ExprlyParser.AND ) {
             return Binary.make(Binary.Op.AND, p, q, "");
         }
@@ -106,6 +108,8 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
     public Expr<V> visitBinaryN(@NotNull ExprlyParser.BinaryNContext ctx) throws UnsupportedOperationException {
         Expr<V> n0 = visit(ctx.expr(0));
         Expr<V> n1 = visit(ctx.expr(1));
+        n0.setReadOnly();
+        n1.setReadOnly();
         if ( ctx.op.getType() == ExprlyParser.POW ) {
             List<Expr<V>> args = new LinkedList<Expr<V>>();
             args.add(n0);
@@ -415,6 +419,7 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
     @Override
     public Unary<V> visitUnaryB(@NotNull ExprlyParser.UnaryBContext ctx) throws UnsupportedOperationException {
         Expr<V> e = visit(ctx.expr());
+        e.setReadOnly();
         if ( ctx.op.getType() == ExprlyParser.NOT ) {
             return Unary.make(Unary.Op.NOT, e);
         }
@@ -427,6 +432,7 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
     @Override
     public Unary<V> visitUnaryN(@NotNull ExprlyParser.UnaryNContext ctx) throws UnsupportedOperationException {
         Expr<V> e = visit(ctx.expr());
+        e.setReadOnly();
         if ( ctx.op.getType() == ExprlyParser.ADD ) {
             return Unary.make(Unary.Op.PLUS, e);
         }
@@ -453,7 +459,9 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
     public ExprList<V> visitListExpr(@NotNull ExprlyParser.ListExprContext ctx) {
         ExprList<V> list = ExprList.make();
         for ( ExprlyParser.ExprContext expr : ctx.expr() ) {
-            list.addExpr(visit(expr));
+            Expr<V> e = visit(expr);
+            e.setReadOnly();
+            list.addExpr(e);
         }
         return list;
     }

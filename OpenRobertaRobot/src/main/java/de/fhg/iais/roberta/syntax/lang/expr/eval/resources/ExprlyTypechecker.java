@@ -193,7 +193,7 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitColorConst(ColorConst<T> colorConst) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noColor") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_COLOR);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "color");
             } else if ( !okMap.get(this.robotName).contains(colorConst.getHexValueAsString()) ) {
                 addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_COLOR, "COLOR", colorConst.getHexValueAsString());
             }
@@ -208,17 +208,14 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitRgbColor(RgbColor<T> rgbColor) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noColor") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_COLOR);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "color");
                 return rgbColor.getVarType();
             } else if ( !okMap.get(this.robotName).contains("rgb") && !okMap.get(this.robotName).contains("rgba") ) {
                 addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_ILLEGAL_RGB);
                 return rgbColor.getVarType();
             }
             if ( rgbColor.getR() instanceof EmptyExpr<?> ) {
-                addError(
-                    okMap.get(this.robotName).contains("rgb")
-                        ? EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_RGB
-                        : EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_RGBA);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_RGB_RGBA, "NUM", okMap.get(this.robotName).contains("rgb") ? "3" : "4");
                 return rgbColor.getVarType();
             }
         }
@@ -405,11 +402,12 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitExprList(ExprList<T> list) throws IllegalArgumentException {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "list");
             }
         }
 
         // Get list of expressions in the list
+        Boolean correct = true;
         List<Expr<T>> eList = list.get();
         List<BlocklyType> tList = new ArrayList<>(eList.size());
         BlocklyType t = BlocklyType.VOID;
@@ -421,6 +419,7 @@ public class ExprlyTypechecker<T> {
             for ( int k = 0; k < eList.size(); k++ ) {
                 tList.add(checkAST(eList.get(k)));
                 if ( !tList.get(k).equals(BlocklyType.VOID) ) {
+
                     t = tList.get(k);
                 }
             }
@@ -430,8 +429,9 @@ public class ExprlyTypechecker<T> {
                     // variable errors are detected previously
                 } else if ( !tList.get(k).equals(BlocklyType.VOID) ) {
                     // If the types are different it's considered an error
-                    if ( !tList.get(k).equals(t) ) {
+                    if ( !tList.get(k).equals(t) && correct ) {
                         addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_TYPE_FOR_LIST_ELEMENT);
+                        correct = false;
                     }
                 }
             }
@@ -496,7 +496,7 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitMathOnListFunct(MathOnListFunct<T> mathOnListFunct) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "list");
             }
         }
         List<Expr<T>> args = mathOnListFunct.getParam();
@@ -605,7 +605,7 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitTextJoinFunct(TextJoinFunct<T> textJoinFunct) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noTextJoin") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_TEXT_JOIN_UNSUPORTED);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_FUNCT, "FUNCT", "createTextWith");
             }
         }
         BlocklyType t;
@@ -648,7 +648,9 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitGetSubFunct(GetSubFunct<T> getSubFunct) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "list");
+            } else if ( okMap.get(this.robotName).contains("noSubList") ) {
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_FUNCT, "FUNCT", "subList");
             }
         }
         BlocklyType t, t0;
@@ -709,7 +711,7 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitListGetIndex(ListGetIndex<T> listGetIndex) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "list");
             }
         }
         BlocklyType t, t0;
@@ -772,7 +774,7 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitListSetIndex(ListSetIndex<T> listSetIndex) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "list");
             }
         }
         BlocklyType t, t0;
@@ -824,9 +826,9 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitListRepeat(ListRepeat<T> listRepeat) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "list");
             } else if ( okMap.get(this.robotName).contains("noListRepeat") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST_REPEAT);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_FUNCT, "FUNCT", "listRepeat");
             }
         }
         BlocklyType t, t0, t1;
@@ -879,7 +881,7 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitLengthOfIsEmptyFunct(LengthOfIsEmptyFunct<T> lengthOfIsEmptyFunct) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "list");
             }
         }
         BlocklyType t, t0;
@@ -921,7 +923,7 @@ public class ExprlyTypechecker<T> {
     private BlocklyType visitIndexOfFunct(IndexOfFunct<T> indexOfFunct) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
-                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_LIST);
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_TYPE, "TYPE", "list");
             }
         }
         BlocklyType t, t1;
@@ -1151,7 +1153,7 @@ public class ExprlyTypechecker<T> {
         nxt.add("#B30006");
         nxt.add("#FFFFFF");
         nxt.add("noListRepeat");
-        nxt.add("noIndexOf");
+        nxt.add("noSubList");
         nxt.add("noTextJoin");
         map.put("nxt", nxt);
 
