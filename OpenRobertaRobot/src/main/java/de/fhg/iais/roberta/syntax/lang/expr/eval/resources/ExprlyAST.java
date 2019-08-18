@@ -366,7 +366,7 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
         if ( f.equals("print") ) {
             return FunctionExpr.make(TextPrintFunct.make(args));
         }
-        if ( f.equals("appendText") ) {
+        if ( f.equals("createTextWith") ) {
             ExprList<V> args0 = ExprList.make();
             for ( Expr<V> e : args ) {
                 args0.addExpr(e);

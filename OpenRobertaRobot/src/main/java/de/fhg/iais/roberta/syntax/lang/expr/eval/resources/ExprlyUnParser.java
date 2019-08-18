@@ -137,6 +137,7 @@ public class ExprlyUnParser<T> {
         for ( ArrayList<Integer> p : pairs ) {
             String test = red.substring(0, p.get(0)) + " " + red.substring(p.get(0) + 1, p.get(1)) + " " + red.substring(p.get(1) + 1, red.length());
             ExprlyParser parser = mkParser(test);
+            parser.removeErrorListeners();
             ExprlyAST<T> eval = new ExprlyAST<>();
             ExpressionContext expression = parser.expression();
             if ( parser.getNumberOfSyntaxErrors() == 0 ) {
@@ -194,15 +195,19 @@ public class ExprlyUnParser<T> {
      * @return Textual representation of the RGB Color
      */
     public String visitRgbColor(RgbColor<T> rgbColor) {
-        return "getRGB("
-            + visitAST(rgbColor.getR())
-            + ","
-            + visitAST(rgbColor.getG())
-            + ","
-            + visitAST(rgbColor.getB())
-            + ","
-            + visitAST(rgbColor.getA())
-            + ")";
+        if ( rgbColor.getA() instanceof EmptyExpr<?> ) {
+            return "getRGB(" + visitAST(rgbColor.getR()) + "," + visitAST(rgbColor.getG()) + "," + visitAST(rgbColor.getB()) + ")";
+        } else {
+            return "getRGB("
+                + visitAST(rgbColor.getR())
+                + ","
+                + visitAST(rgbColor.getG())
+                + ","
+                + visitAST(rgbColor.getB())
+                + ","
+                + visitAST(rgbColor.getA())
+                + ")";
+        }
     }
 
     /**
@@ -439,7 +444,7 @@ public class ExprlyUnParser<T> {
         if ( indexOfFunct.getLocation().equals(IndexLocation.FIRST) ) {
             return "indexOfFirst(" + paramList(args) + ")";
         } else if ( indexOfFunct.getLocation().equals(IndexLocation.LAST) ) {
-
+            return "indexOfLast(" + paramList(args) + ")";
         }
         throw new UnsupportedOperationException("Not supported Index mode for IndexOfFunct");
     }
@@ -462,7 +467,7 @@ public class ExprlyUnParser<T> {
     }
 
     private String visitTextJoinFunct(TextJoinFunct<T> textJoinFunct) {
-        return "cat(" + paramList(textJoinFunct.getParam().get()) + ")";
+        return "createTextWith(" + paramList(textJoinFunct.getParam().get()) + ")";
     }
 
     private String visitTextPrintFunct(TextPrintFunct<T> textPrintFunct) {
@@ -474,36 +479,34 @@ public class ExprlyUnParser<T> {
     }
 
     private String visitListGetIndex(ListGetIndex<T> listGetIndex) {
-        List<Expr<T>> args = listGetIndex.getParam();
-        String s = listOperations.get(listGetIndex.getElementOperation()) + "Index" + imodes.get(listGetIndex.getLocation()) + "(";
-        for ( int k = 0; k < args.size(); k++ ) {
-            s += visitAST(args.get(k)) + (k == args.size() - 1 ? ")" : ",");
-        }
-        return s;
+        return listOperations.get(listGetIndex.getElementOperation())
+            + "Index"
+            + imodes.get(listGetIndex.getLocation())
+            + "("
+            + paramList(listGetIndex.getParam())
+            + ")";
     }
 
     private String visitListSetIndex(ListSetIndex<T> listSetIndex) {
-        List<Expr<T>> args = listSetIndex.getParam();
-        String s = listOperations.get(listSetIndex.getElementOperation()) + "Index" + imodes.get(listSetIndex.getLocation()) + "(";
-        for ( int k = 0; k < args.size(); k++ ) {
-            s += visitAST(args.get(k)) + (k == args.size() - 1 ? ")" : ",");
-        }
-        return s;
+        return listOperations.get(listSetIndex.getElementOperation())
+            + "Index"
+            + imodes.get(listSetIndex.getLocation())
+            + "("
+            + paramList(listSetIndex.getParam())
+            + ")";
     }
 
     private String visitLengthOfIsEmptyFunct(LengthOfIsEmptyFunct<T> lengthOfIsEmptyFunct) {
         FunctionNames fname = lengthOfIsEmptyFunct.getFunctName();
-        List<Expr<T>> args = lengthOfIsEmptyFunct.getParam();
         if ( fname.equals(FunctionNames.LISTS_LENGTH) ) {
-            return "lengthOf(" + args.get(1) + ")";
+            return "lengthOf(" + paramList(lengthOfIsEmptyFunct.getParam()) + ")";
         } else if ( fname.equals(FunctionNames.LIST_IS_EMPTY) ) {
-            return "isEmpty(" + args.get(1) + ")";
+            return "isEmpty(" + paramList(lengthOfIsEmptyFunct.getParam()) + ")";
         }
         return null;
     }
 
     private String visitGetSubFunct(GetSubFunct<T> getSubFunct) {
-        List<Expr<T>> args = getSubFunct.getParam();
         List<IMode> mode = getSubFunct.getStrParam();
         String s = "subList";
         if ( !(mode.get(0).equals(IndexLocation.FROM_START) && mode.get(1).equals(IndexLocation.FROM_START)) ) {
@@ -523,10 +526,7 @@ public class ExprlyUnParser<T> {
                 s += "ToEnd";
             }
         }
-        for ( int k = 0; k < args.size(); k++ ) {
-            s += visitAST(args.get(k)) + (k == args.size() - 1 ? ")" : ",");
-        }
-        return s;
+        return s += "(" + paramList(getSubFunct.getParam()) + ")";
     }
 
     /**

@@ -7,13 +7,18 @@ public enum EvalExprError {
     EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_NUMBER(
         "Wrong number of arguments in function call (Check help for more info on the arguments of the function)." ),
     EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE( "The expression {EXPR} is the wrong type of argument for the function call." ),
-    EXPRBLOCK_TYPECHECK_ERROR_UNDECLARED_VARIABLE( "Variable {NAME} not declared" ),
+    EXPRBLOCK_TYPECHECK_ERROR_UNDECLARED_VARIABLE( "Variable {NAME} not declared." ),
     EXPRBLOCK_TYPECHECK_ERROR_INVALID_COLOR( "The color {COLOR} is invalid for the current robot." ),
     EXPRBLOCK_TYPECHECK_ERROR_ILLEGAL_RGB( "The current robot can't use RGB colors." ),
     EXPRBLOCK_TYPECHECK_ERROR_INVALID_RGB( "The getRGB function takes 3 parameters for this robot." ),
     EXPRBLOCK_TYPECHECK_ERROR_INVALID_RGBA( "The getRGB function takes 4 parameters for this robot." ),
     EXPRBLOCK_TYPECHECK_ERROR_INVALID_BLOCK_FOR_ROBOT( "The expression {EXPR} isn't valid for the current robot." ),
-    EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD( "You cannot use void methods in that expression." );
+    EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD( "You cannot use void methods in that expression." ),
+    EXPRBLOCK_TYPECHECK_ERROR_UNSUPPORTED_FUNCTION( "You're ussing an unsupported function for this robot." ),
+    EXPRBLOCK_TYPECHECK_ERROR_NO_LIST( "The current robot doesn't support the use of list." ),
+    EXPRBLOCK_TYPECHECK_ERROR_NO_LIST_REPEAT( "The repeatList function isn't supported for the current robot." ),
+    EXPRBLOCK_TYPECHECK_ERROR_TEXT_JOIN_UNSUPORTED( "The createTextWith function isn't supported for the current robot." ),
+    EXPRBLOCK_TYPECHECK_ERROR_NO_COLOR( "The current robot doesn't support the use of colours." );
 
     private String msg;
 

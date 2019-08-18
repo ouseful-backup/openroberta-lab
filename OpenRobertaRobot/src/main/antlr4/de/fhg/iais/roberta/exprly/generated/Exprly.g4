@@ -28,7 +28,7 @@ expr     : NULL                                                      # NullConst
 literal  : INT                                                       # IntConst
          | FLOAT                                                     # FloatConst
          | BOOL                                                      # BoolConstB
-         | '"'  .*?  '"'                                             # ConstStr
+         | '"'  (.*?|'.'|'?')  '"'                                   # ConstStr
          | COLOR                                                     # Col
          | '[' (expr ',')* expr? ']'                                 # ListExpr
          ;
@@ -109,7 +109,7 @@ FNAME   :  'sin'
         |  'subListFromEndToEnd'
         |  'subListFromEndToLast'
         |  'print'
-        |  'appendText'
+        |  'createTextWith'
         |  'constrain'
         |  'getRGB'
         ;
@@ -121,6 +121,7 @@ CONST   :  'phi'
         |  'sqrt_1_2'
         |  'inf'
         ;
+        
 NULL    : 'null';
 
 INT     :    ('0'..'9')+;

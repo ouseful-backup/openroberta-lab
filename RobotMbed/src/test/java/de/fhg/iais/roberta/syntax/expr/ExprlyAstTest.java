@@ -67,22 +67,6 @@ public class ExprlyAstTest {
     }
 
     /**
-     * create a correct AST programmatically for a binary mod expression.
-     * Check that the AST is ok.<br>
-     */
-    @Test
-    public void compareText() throws Exception {
-        Expr<Void> comp = expr2AST("500>=0");
-        ExprlyUnParser<Void> p = new ExprlyUnParser<Void>(comp);
-        String t = "Binary [GTE, NumConst [500], NumConst [0]]";
-        ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(comp, BlocklyType.BOOLEAN);
-        c.check();
-        Assert.assertTrue(0 == c.getNumErrors());
-        Assert.assertEquals(t, comp.toString());
-        Assert.assertEquals(comp.toString(), expr2AST(p.UnParse()).toString());
-    }
-
-    /**
      * create a correct AST programmatically for a math const expression.
      * Check that the AST is ok.<br>
      */
@@ -109,74 +93,9 @@ public class ExprlyAstTest {
         String t = "Binary [EQ, Binary [OR, Binary [AND, BoolConst [true], " + "Unary [NOT, BoolConst [false]]], Var [x]], BoolConst [true]]";
         ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(conj, BlocklyType.BOOLEAN);
         c.check();
-        Assert.assertTrue(1 == c.getNumErrors());
+        Assert.assertTrue(0 == c.getNumErrors());
         Assert.assertEquals(t, conj.toString());
         Assert.assertEquals(conj.toString(), expr2AST(p.UnParse()).toString());
-    }
-
-    /**
-     * create a correct AST programmatically for a string expression.
-     * Check that the AST is ok.<br>
-     */
-    @Test
-    public void strText() throws Exception {
-        Expr<Void> str = expr2AST("\"String Hallo\"");
-        ExprlyUnParser<Void> p = new ExprlyUnParser<Void>(str);
-        String t = "StringConst [String Hallo]";
-        ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(str, BlocklyType.STRING);
-        c.check();
-        Assert.assertTrue(0 == c.getNumErrors());
-        Assert.assertEquals(t, str.toString());
-        Assert.assertEquals(str.toString(), expr2AST(p.UnParse()).toString());
-    }
-
-    /**
-     * create a correct AST programmatically for a color expression.
-     * Check that the AST is ok.<br>
-     */
-    @Test
-    public void colorText() throws Exception {
-        Expr<Void> col = expr2AST("#F043BA");
-        ExprlyUnParser<Void> p = new ExprlyUnParser<Void>(col);
-        String t = "ColorConst [#F043BA]";
-        ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(col, BlocklyType.COLOR);
-        c.check();
-        Assert.assertTrue(0 == c.getNumErrors());
-        Assert.assertEquals(t, col.toString());
-        Assert.assertEquals(col.toString(), expr2AST(p.UnParse()).toString());
-    }
-
-    /**
-     * create a correct AST programmatically for a connect expression.
-     * Check that the AST is ok.<br>
-     */
-    @Test
-    public void connectText() throws Exception {
-        Expr<Void> connect = expr2AST("connect con1, con2");
-        ExprlyUnParser<Void> p = new ExprlyUnParser<Void>(connect);
-        String t = "ConnectConst [con2]";
-        ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(connect, BlocklyType.CONNECTION);
-        c.check();
-        Assert.assertTrue(0 == c.getNumErrors());
-        Assert.assertEquals(t, connect.toString());
-        Assert.assertEquals(connect.toString(), expr2AST(p.UnParse()).toString());
-    }
-
-    /**
-     * create a correct AST programmatically for a list expression (we use the math expression list
-     * for the test).
-     * Check that the AST is ok (but without checking the generated code).<br>
-     */
-    @Test
-    public void listmText() throws Exception {
-        Expr<Void> list = expr2AST("([1,1+2,-(1+2)])");
-        ExprlyUnParser<Void> p = new ExprlyUnParser<Void>(list);
-        ExprlyTypechecker<Void> c = new ExprlyTypechecker<Void>(list, BlocklyType.ARRAY_NUMBER);
-        c.check();
-        Assert.assertTrue(0 == c.getNumErrors());
-        String t = "NumConst [1], Binary [ADD, NumConst [1], NumConst [2]], Unary [NEG, Binary [ADD, NumConst [1], NumConst [2]]]";
-        Assert.assertEquals(t, list.toString());
-        Assert.assertEquals(list.toString(), expr2AST(p.UnParse()).toString());
     }
 
     /**
