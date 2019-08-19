@@ -18,10 +18,20 @@ public enum EvalExprError {
 
     private String msg;
 
+    /**
+     * Constructor for the class, sets the message
+     *
+     * @param message to be stored
+     */
     private EvalExprError(String keyStr) {
         this.msg = keyStr;
     }
 
+    /**
+     * Function to get message for the key
+     *
+     * @return message
+     */
     public String getMsg() {
         return this.msg;
     }

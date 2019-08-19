@@ -229,6 +229,22 @@ public class ExprlyUnParser<T> {
     }
 
     /**
+     * @param Empty Expression
+     * @return Empty String
+     */
+    private String visitEmptyExpr(EmptyExpr<T> emptyExpr) {
+        return "";
+    }
+
+    /**
+     * @param Null Expression
+     * @return Textual representation of null
+     */
+    private String visitNullConst(NullConst<T> nullConst) {
+        return "null";
+    }
+
+    /**
      * Method to UnParse Unary expressions
      *
      * @param Unary Expression
@@ -340,6 +356,148 @@ public class ExprlyUnParser<T> {
     }
 
     /**
+     * Method to UnParse MathRandomIntFunctions
+     *
+     * @param Function
+     * @return Textual representation of function
+     */
+    private String visitIndexOfFunct(IndexOfFunct<T> indexOfFunct) {
+        List<Expr<T>> args = indexOfFunct.getParam();
+        if ( indexOfFunct.getLocation().equals(IndexLocation.FIRST) ) {
+            return "indexOfFirst(" + paramList(args) + ")";
+        } else if ( indexOfFunct.getLocation().equals(IndexLocation.LAST) ) {
+            return "indexOfLast(" + paramList(args) + ")";
+        }
+        throw new UnsupportedOperationException("Not supported Index mode for IndexOfFunct");
+    }
+
+    /**
+     * Method to UnParse MathPowerFunction
+     *
+     * @param Function
+     * @return Textual representation of the function
+     */
+    private String visitMathPowerFunct(MathPowerFunct<T> mathPowerFunct) {
+        List<Expr<T>> args = mathPowerFunct.getParam();
+        return "(" + visitAST(args.get(0)) + ")^(" + visitAST(args.get(1)) + ")";
+    }
+
+    /**
+     * Method to UnParse MathConstrainFunction
+     *
+     * @param Function
+     * @return Textual representation of the function
+     */
+    private String visitMathConstrainFunct(MathConstrainFunct<T> mathConstrainFunct) {
+        return "constrain(" + paramList(mathConstrainFunct.getParam()) + ")";
+    }
+
+    /**
+     * Method to UnParse TextJoinFunction
+     *
+     * @param Function
+     * @return Textual representation of the function
+     */
+    private String visitTextJoinFunct(TextJoinFunct<T> textJoinFunct) {
+        return "createTextWith(" + paramList(textJoinFunct.getParam().get()) + ")";
+    }
+
+    /**
+     * Method to UnParse print
+     *
+     * @param Function
+     * @return Textual representation of the method
+     */
+    private String visitTextPrintFunct(TextPrintFunct<T> textPrintFunct) {
+        return "print(" + paramList(textPrintFunct.getParam()) + ")";
+    }
+
+    /**
+     * Method to UnParse ListRepeatFunction
+     *
+     * @param Function
+     * @return Textual representation of the function
+     */
+    private String visitListRepeat(ListRepeat<T> listRepeat) {
+        return "repeatList(" + paramList(listRepeat.getParam()) + ")";
+    }
+
+    /**
+     * Method to UnParse ListGetFunction
+     *
+     * @param Function
+     * @return Textual representation of the function
+     */
+    private String visitListGetIndex(ListGetIndex<T> listGetIndex) {
+        return listOperations.get(listGetIndex.getElementOperation())
+            + "Index"
+            + imodes.get(listGetIndex.getLocation())
+            + "("
+            + paramList(listGetIndex.getParam())
+            + ")";
+    }
+
+    /**
+     * Method to UnParse ListSetFunction
+     *
+     * @param Function
+     * @return Textual representation of the function
+     */
+    private String visitListSetIndex(ListSetIndex<T> listSetIndex) {
+        return listOperations.get(listSetIndex.getElementOperation())
+            + "Index"
+            + imodes.get(listSetIndex.getLocation())
+            + "("
+            + paramList(listSetIndex.getParam())
+            + ")";
+    }
+
+    /**
+     * Method to UnParse LengthOfIsEmptyFunction
+     *
+     * @param Function
+     * @return Textual representation of the function
+     */
+    private String visitLengthOfIsEmptyFunct(LengthOfIsEmptyFunct<T> lengthOfIsEmptyFunct) {
+        FunctionNames fname = lengthOfIsEmptyFunct.getFunctName();
+        if ( fname.equals(FunctionNames.LISTS_LENGTH) ) {
+            return "lengthOf(" + paramList(lengthOfIsEmptyFunct.getParam()) + ")";
+        } else if ( fname.equals(FunctionNames.LIST_IS_EMPTY) ) {
+            return "isEmpty(" + paramList(lengthOfIsEmptyFunct.getParam()) + ")";
+        }
+        return null;
+    }
+
+    /**
+     * Method to UnParse GetSubFunction
+     *
+     * @param Function
+     * @return Textual representation of the function
+     */
+    private String visitGetSubFunct(GetSubFunct<T> getSubFunct) {
+        List<IMode> mode = getSubFunct.getStrParam();
+        String s = "subList";
+        if ( !(mode.get(0).equals(IndexLocation.FROM_START) && mode.get(1).equals(IndexLocation.FROM_START)) ) {
+            if ( mode.get(0).equals(IndexLocation.FROM_START) ) {
+                s += "FromIndex";
+            } else if ( mode.get(0).equals(IndexLocation.FIRST) ) {
+                s += "FromFirst";
+            } else if ( mode.get(0).equals(IndexLocation.FROM_END) ) {
+                s += "FromEnd";
+            }
+
+            if ( mode.get(1).equals(IndexLocation.FROM_START) ) {
+                s += "ToIndex";
+            } else if ( mode.get(1).equals(IndexLocation.LAST) ) {
+                s += "ToLast";
+            } else if ( mode.get(1).equals(IndexLocation.FROM_END) ) {
+                s += "ToEnd";
+            }
+        }
+        return s += "(" + paramList(getSubFunct.getParam()) + ")";
+    }
+
+    /**
      * Method to UnParse any expression
      *
      * @param ast, expression to unparse
@@ -437,96 +595,6 @@ public class ExprlyUnParser<T> {
             return visitIndexOfFunct((IndexOfFunct<T>) ast);
         }
         throw new UnsupportedOperationException("Expression " + ast.toString() + "cannot be checked");
-    }
-
-    private String visitIndexOfFunct(IndexOfFunct<T> indexOfFunct) {
-        List<Expr<T>> args = indexOfFunct.getParam();
-        if ( indexOfFunct.getLocation().equals(IndexLocation.FIRST) ) {
-            return "indexOfFirst(" + paramList(args) + ")";
-        } else if ( indexOfFunct.getLocation().equals(IndexLocation.LAST) ) {
-            return "indexOfLast(" + paramList(args) + ")";
-        }
-        throw new UnsupportedOperationException("Not supported Index mode for IndexOfFunct");
-    }
-
-    private String visitEmptyExpr(EmptyExpr<T> emptyExpr) {
-        return "";
-    }
-
-    private String visitNullConst(NullConst<T> nullConst) {
-        return "null";
-    }
-
-    private String visitMathPowerFunct(MathPowerFunct<T> mathPowerFunct) {
-        List<Expr<T>> args = mathPowerFunct.getParam();
-        return "(" + visitAST(args.get(0)) + ")^(" + visitAST(args.get(1)) + ")";
-    }
-
-    private String visitMathConstrainFunct(MathConstrainFunct<T> mathConstrainFunct) {
-        return "constrain(" + paramList(mathConstrainFunct.getParam()) + ")";
-    }
-
-    private String visitTextJoinFunct(TextJoinFunct<T> textJoinFunct) {
-        return "createTextWith(" + paramList(textJoinFunct.getParam().get()) + ")";
-    }
-
-    private String visitTextPrintFunct(TextPrintFunct<T> textPrintFunct) {
-        return "print(" + paramList(textPrintFunct.getParam()) + ")";
-    }
-
-    private String visitListRepeat(ListRepeat<T> listRepeat) {
-        return "repeatList(" + paramList(listRepeat.getParam()) + ")";
-    }
-
-    private String visitListGetIndex(ListGetIndex<T> listGetIndex) {
-        return listOperations.get(listGetIndex.getElementOperation())
-            + "Index"
-            + imodes.get(listGetIndex.getLocation())
-            + "("
-            + paramList(listGetIndex.getParam())
-            + ")";
-    }
-
-    private String visitListSetIndex(ListSetIndex<T> listSetIndex) {
-        return listOperations.get(listSetIndex.getElementOperation())
-            + "Index"
-            + imodes.get(listSetIndex.getLocation())
-            + "("
-            + paramList(listSetIndex.getParam())
-            + ")";
-    }
-
-    private String visitLengthOfIsEmptyFunct(LengthOfIsEmptyFunct<T> lengthOfIsEmptyFunct) {
-        FunctionNames fname = lengthOfIsEmptyFunct.getFunctName();
-        if ( fname.equals(FunctionNames.LISTS_LENGTH) ) {
-            return "lengthOf(" + paramList(lengthOfIsEmptyFunct.getParam()) + ")";
-        } else if ( fname.equals(FunctionNames.LIST_IS_EMPTY) ) {
-            return "isEmpty(" + paramList(lengthOfIsEmptyFunct.getParam()) + ")";
-        }
-        return null;
-    }
-
-    private String visitGetSubFunct(GetSubFunct<T> getSubFunct) {
-        List<IMode> mode = getSubFunct.getStrParam();
-        String s = "subList";
-        if ( !(mode.get(0).equals(IndexLocation.FROM_START) && mode.get(1).equals(IndexLocation.FROM_START)) ) {
-            if ( mode.get(0).equals(IndexLocation.FROM_START) ) {
-                s += "FromIndex";
-            } else if ( mode.get(0).equals(IndexLocation.FIRST) ) {
-                s += "FromFirst";
-            } else if ( mode.get(0).equals(IndexLocation.FROM_END) ) {
-                s += "FromEnd";
-            }
-
-            if ( mode.get(1).equals(IndexLocation.FROM_START) ) {
-                s += "ToIndex";
-            } else if ( mode.get(1).equals(IndexLocation.LAST) ) {
-                s += "ToLast";
-            } else if ( mode.get(1).equals(IndexLocation.FROM_END) ) {
-                s += "ToEnd";
-            }
-        }
-        return s += "(" + paramList(getSubFunct.getParam()) + ")";
     }
 
     /**

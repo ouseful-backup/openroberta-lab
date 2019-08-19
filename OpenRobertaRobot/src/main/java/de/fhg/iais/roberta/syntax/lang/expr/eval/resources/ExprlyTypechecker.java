@@ -56,7 +56,7 @@ public class ExprlyTypechecker<T> {
     private BlocklyType resultType;
     private final BlocklyType expectedResultType;
     private final List<VarDeclaration<T>> vars;
-    private static Map<String, Set<String>> okMap;
+    private static Map<String, Set<String>> okMap; // This is a map of special restrictions for each robot
 
     /**
      * Class constructor, creates an instance of {@link ExprlyTypechecker} for the phrase passed as parameter
@@ -286,7 +286,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check Unary expressions, writes errors in the log if there are any.
+     * Method to check Unary expressions, stores any errors found in the error list.
      *
      * @param Unary Expression
      * @return Return Type of block
@@ -320,7 +320,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check Binary expressions, writes errors in the log if there are any.
+     * Method to check Binary expressions, stores any errors found in the error list.
      *
      * @param Binary Expression
      * @return Return Type of block
@@ -394,7 +394,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check List expressions, writes errors in the log if there are any.
+     * Method to check List expressions, stores any errors found in the error list.
      *
      * @param List Expression
      * @return Type of block
@@ -474,7 +474,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check MathNumPropFunctions, writes errors in the log if there are any.
+     * Method to check MathNumPropFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -488,7 +488,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check MathOnListFunctions, writes errors in the log if there are any.
+     * Method to check MathOnListFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -551,7 +551,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check MathRandomIntFunctions, writes errors in the log if there are any.
+     * Method to check MathRandomIntFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -561,7 +561,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check MathSingleFunctions, writes errors in the log if there are any.
+     * Method to check MathSingleFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -577,7 +577,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check MathPowerFunctions, writes errors in the log if there are any.
+     * Method to check MathPowerFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -587,7 +587,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check MathConstrainFunctions, writes errors in the log if there are any.
+     * Method to check MathConstrainFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -597,7 +597,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check TextJoinFunctions, writes errors in the log if there are any.
+     * Method to check TextJoinFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -630,7 +630,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check TextPrintFunctions, writes errors in the log if there are any.
+     * Method to check TextPrintFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -640,7 +640,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check SubListFunctions, writes errors in the log if there are any.
+     * Method to check SubListFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -703,7 +703,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check ListGetFunctions, writes errors in the log if there are any.
+     * Method to check ListGetFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -766,7 +766,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check ListSetFunctions, writes errors in the log if there are any.
+     * Method to check ListSetFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -818,7 +818,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check ListRepeatFunctions, writes errors in the log if there are any.
+     * Method to check ListRepeatFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -873,7 +873,7 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
-     * Method to check LengthOfFunctions, writes errors in the log if there are any.
+     * Method to check LengthOfFunctions, stores any errors found in the error list.
      *
      * @param Function
      * @return Return Type of function
@@ -920,6 +920,12 @@ public class ExprlyTypechecker<T> {
         throw new UnsupportedOperationException("Invalid function name in LengthOsIsEmptyExpr");
     }
 
+    /**
+     * Method to check visitIndexOfFunct, stores any errors found in the error list.
+     *
+     * @param Function
+     * @return Return Type of function
+     */
     private BlocklyType visitIndexOfFunct(IndexOfFunct<T> indexOfFunct) {
         if ( this.robotName != null ) {
             if ( okMap.get(this.robotName).contains("noList") ) {
