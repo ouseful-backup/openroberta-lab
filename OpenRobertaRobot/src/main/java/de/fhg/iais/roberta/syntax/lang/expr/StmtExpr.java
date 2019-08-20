@@ -56,7 +56,7 @@ public class StmtExpr<V> extends Expr<V> {
 
     @Override
     public String toString() {
-        return "SensorExpr [" + this.stmt + "]";
+        return "StmtExpr [" + this.stmt + "]";
     }
 
     @Override

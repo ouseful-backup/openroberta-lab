@@ -25,6 +25,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.MathConst;
 import de.fhg.iais.roberta.syntax.lang.expr.NullConst;
 import de.fhg.iais.roberta.syntax.lang.expr.NumConst;
 import de.fhg.iais.roberta.syntax.lang.expr.RgbColor;
+import de.fhg.iais.roberta.syntax.lang.expr.StmtExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.StringConst;
 import de.fhg.iais.roberta.syntax.lang.expr.Unary;
 import de.fhg.iais.roberta.syntax.lang.expr.Var;
@@ -44,6 +45,9 @@ import de.fhg.iais.roberta.syntax.lang.functions.MathRandomIntFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.MathSingleFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.TextJoinFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.TextPrintFunct;
+import de.fhg.iais.roberta.syntax.lang.stmt.ExprStmt;
+import de.fhg.iais.roberta.syntax.lang.stmt.IfStmt;
+import de.fhg.iais.roberta.syntax.lang.stmt.StmtList;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
 
 public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
@@ -482,4 +486,30 @@ public class ExprlyAST<V> extends ExprlyBaseVisitor<Expr<V>> {
         return ConnectConst.make(ctx.op0.getText(), ctx.op1.getText());
     }
 
+    /**
+     * @return AST instance of the ternary op
+     */
+    @Override
+    public Expr<V> visitIfElseOp(@NotNull ExprlyParser.IfElseOpContext ctx) {
+        Expr<V> q = visit(ctx.expr(1));
+        Expr<V> r = visit(ctx.expr(2));
+        if ( q instanceof ExprList<?> ) {
+            q.setReadOnly();
+            q = ListCreate.make(BlocklyType.VOID, (ExprList<V>) q);
+        }
+        if ( r instanceof ExprList<?> ) {
+            r.setReadOnly();
+            r = ListCreate.make(BlocklyType.VOID, (ExprList<V>) r);
+        }
+        q.setReadOnly();
+        r.setReadOnly();
+        StmtList<V> thenList = StmtList.make();
+        StmtList<V> elseList = StmtList.make();
+        thenList.addStmt(ExprStmt.make(q));
+        elseList.addStmt(ExprStmt.make(r));
+        thenList.setReadOnly();
+        elseList.setReadOnly();
+        IfStmt<V> ifElse = IfStmt.make(visit(ctx.expr(0)), thenList, elseList, 0, 0);
+        return StmtExpr.make(ifElse);
+    }
 }

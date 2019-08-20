@@ -122,6 +122,25 @@ public class IfStmt<V> extends Stmt<V> {
     }
 
     /**
+     * factory method: create an AST instance of {@link IfStmt}, this will be a ternary operator.<br>
+     * <b>Main use: either testing or textual representation of programs (because in these cases no graphical regeneration is required.</b>
+     *
+     * @param expr expression that should be evaluated in the <b>if</b> part,
+     * @param thenList statement that is in the <b>then</b> part,
+     * @param elseList all statement that is in the <b>else</b> part,
+     * @param _else statement,
+     * @param _elseIf number of if statements
+     * @return read only object of class {@link IfStmt}
+     */
+    public static <V> IfStmt<V> make(Expr<V> expr, StmtList<V> thenList, StmtList<V> elseList, int _else, int _elseIf) {
+        List<Expr<V>> exprsList = new ArrayList<Expr<V>>();
+        List<StmtList<V>> thensList = new ArrayList<StmtList<V>>();
+        exprsList.add(expr);
+        thensList.add(thenList);
+        return new IfStmt<V>(exprsList, thensList, elseList, true, BlocklyBlockProperties.make("1", "1"), null, _else, _elseIf);
+    }
+
+    /**
      * create <b>if-then</b> statement where we have one or more the one <b>if</b> and <b>then</b>.
      *
      * @param expr list of all expressions that should be evaluated in the <b>if</b> parts,

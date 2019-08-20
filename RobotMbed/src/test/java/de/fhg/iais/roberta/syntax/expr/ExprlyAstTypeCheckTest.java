@@ -89,6 +89,16 @@ public class ExprlyAstTypeCheckTest {
     }
 
     @Test
+    public void typeCheckTernary() throws Exception {
+        typeCheck("\"one\"?1:false", BlocklyType.NUMBER);
+    }
+
+    @Test
+    public void typeCheckTernaryArg() throws Exception {
+        typeCheck("subList(true?[1,true]:[2,3],0,1)", BlocklyType.ARRAY_NUMBER);
+    }
+
+    @Test
     public void typeCheckWeDo() throws Exception {
         typeCheck("max([0, 1])", BlocklyType.NUMBER, "wedo");
     }

@@ -35,6 +35,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.MathConst;
 import de.fhg.iais.roberta.syntax.lang.expr.NullConst;
 import de.fhg.iais.roberta.syntax.lang.expr.NumConst;
 import de.fhg.iais.roberta.syntax.lang.expr.RgbColor;
+import de.fhg.iais.roberta.syntax.lang.expr.StmtExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.StringConst;
 import de.fhg.iais.roberta.syntax.lang.expr.Unary;
 import de.fhg.iais.roberta.syntax.lang.expr.Var;
@@ -54,6 +55,8 @@ import de.fhg.iais.roberta.syntax.lang.functions.MathRandomIntFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.MathSingleFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.TextJoinFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.TextPrintFunct;
+import de.fhg.iais.roberta.syntax.lang.stmt.ExprStmt;
+import de.fhg.iais.roberta.syntax.lang.stmt.IfStmt;
 
 public class ExprlyUnParser<T> {
     private String se;
@@ -498,6 +501,33 @@ public class ExprlyUnParser<T> {
     }
 
     /**
+     * Method to unparse the ternaryOperator.
+     *
+     * @param operation
+     * @return Return textual representation of the operation
+     */
+    private String visitIfStmt(IfStmt<T> ifStmt) {
+        return "(("
+            + visitAST(ifStmt.getExpr().get(0))
+            + ")?("
+            + visitAST(((ExprStmt<T>) ifStmt.getThenList().get(0).get().get(0)).getExpr())
+            + "):("
+            + visitAST(((ExprStmt<T>) ifStmt.getElseList().get().get(0)).getExpr())
+            + "))";
+    }
+
+    /**
+     * Method to unparse exprStmts.
+     *
+     * @param expression stmt
+     * @return Return textual representation of expr
+     */
+    @SuppressWarnings("unchecked")
+    private String visitStmtExpr(StmtExpr<?> stmtExpr) {
+        return visitAST((Phrase<T>) stmtExpr.getStmt());
+    }
+
+    /**
      * Method to UnParse any expression
      *
      * @param ast, expression to unparse
@@ -593,6 +623,12 @@ public class ExprlyUnParser<T> {
         }
         if ( ast instanceof IndexOfFunct<?> ) {
             return visitIndexOfFunct((IndexOfFunct<T>) ast);
+        }
+        if ( ast instanceof StmtExpr<?> ) {
+            return visitStmtExpr((StmtExpr<T>) ast);
+        }
+        if ( ast instanceof IfStmt<?> ) {
+            return visitIfStmt((IfStmt<T>) ast);
         }
         throw new UnsupportedOperationException("Expression " + ast.toString() + "cannot be checked");
     }

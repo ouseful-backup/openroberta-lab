@@ -26,6 +26,7 @@ import de.fhg.iais.roberta.syntax.lang.expr.MathConst;
 import de.fhg.iais.roberta.syntax.lang.expr.NullConst;
 import de.fhg.iais.roberta.syntax.lang.expr.NumConst;
 import de.fhg.iais.roberta.syntax.lang.expr.RgbColor;
+import de.fhg.iais.roberta.syntax.lang.expr.StmtExpr;
 import de.fhg.iais.roberta.syntax.lang.expr.StringConst;
 import de.fhg.iais.roberta.syntax.lang.expr.Unary;
 import de.fhg.iais.roberta.syntax.lang.expr.Var;
@@ -46,6 +47,8 @@ import de.fhg.iais.roberta.syntax.lang.functions.MathRandomIntFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.MathSingleFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.TextJoinFunct;
 import de.fhg.iais.roberta.syntax.lang.functions.TextPrintFunct;
+import de.fhg.iais.roberta.syntax.lang.stmt.ExprStmt;
+import de.fhg.iais.roberta.syntax.lang.stmt.IfStmt;
 import de.fhg.iais.roberta.typecheck.BlocklyType;
 
 public class ExprlyTypechecker<T> {
@@ -966,6 +969,54 @@ public class ExprlyTypechecker<T> {
     }
 
     /**
+     * Method to check ternaryOperator, stores any errors found in the error list.
+     *
+     * @param operation
+     * @return Return Type of the possible results of the operation or Void if there's an error
+     */
+    private BlocklyType visitIfStmt(IfStmt<T> ifStmt) {
+        if ( this.robotName != null ) {
+            if ( okMap.get(this.robotName).contains("noTernary") ) {
+                addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_NO_FUNCT, "FUNCT", "ternary operation");
+            }
+        }
+        BlocklyType t;
+        List<Expr<T>> p = ifStmt.getExpr();
+        for ( Expr<T> e : p ) {
+            t = checkAST(e);
+            if ( !t.equals(BlocklyType.VOID) && !t.equals(BlocklyType.BOOLEAN) ) {
+                if ( t.equals(BlocklyType.NOTHING) ) {
+                    addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_UNEXPECTED_METHOD);
+                } else {
+                    ExprlyUnParser<T> up = new ExprlyUnParser<T>(e);
+                    addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_ARGUMENT_TYPE, "EXPR", up.fullUnParse());
+                }
+            }
+        }
+
+        ExprStmt<T> thenStmt = (ExprStmt<T>) ifStmt.getThenList().get(0).get().get(0);
+        ExprStmt<T> elseStmt = (ExprStmt<T>) ifStmt.getElseList().get().get(0);
+        t = checkAST(thenStmt.getExpr());
+        if ( !t.equals(checkAST(elseStmt.getExpr())) ) {
+            addError(EvalExprError.EXPRBLOCK_TYPECHECK_ERROR_INVALID_OPERAND_TYPE);
+            return BlocklyType.VOID;
+        } else {
+            return t;
+        }
+    }
+
+    /**
+     * Method to check exprStmts.
+     *
+     * @param expression stmt
+     * @return Return Type of expr
+     */
+    @SuppressWarnings("unchecked")
+    private BlocklyType visitStmtExpr(StmtExpr<?> stmtExpr) {
+        return checkAST((Phrase<T>) stmtExpr.getStmt());
+    }
+
+    /**
      * Method to check type of the phrase passed as parameter
      *
      * @param ast, phrase to analyze
@@ -1062,6 +1113,12 @@ public class ExprlyTypechecker<T> {
         if ( ast instanceof EmptyExpr<?> ) {
             return visitEmptyExpr((EmptyExpr<T>) ast);
         }
+        if ( ast instanceof StmtExpr<?> ) {
+            return visitStmtExpr((StmtExpr<T>) ast);
+        }
+        if ( ast instanceof IfStmt<?> ) {
+            return visitIfStmt((IfStmt<T>) ast);
+        }
 
         throw new UnsupportedOperationException("Expression " + ast.toString() + "cannot be checked");
     }
@@ -1139,6 +1196,7 @@ public class ExprlyTypechecker<T> {
         wedo.add("#FFFFFE");
         wedo.add("#FFFFFF");
         wedo.add("noList");
+        wedo.add("noTernary");
         map.put("wedo", wedo);
 
         ev3.add("#585858");

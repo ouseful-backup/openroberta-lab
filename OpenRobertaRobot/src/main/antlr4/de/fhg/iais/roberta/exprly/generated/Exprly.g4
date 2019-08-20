@@ -23,6 +23,7 @@ expr     : NULL                                                      # NullConst
          | expr op=LET expr                                          # BinaryB
          | expr op=GEQ expr                                          # BinaryB
          | expr op=LEQ expr                                          # BinaryB
+         | expr '?' expr ':' expr									 # IfElseOp
          ; 
           
 literal  : INT                                                       # IntConst

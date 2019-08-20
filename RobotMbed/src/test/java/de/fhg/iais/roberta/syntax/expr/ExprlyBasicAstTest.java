@@ -378,6 +378,20 @@ public class ExprlyBasicAstTest {
     }
 
     @Test
+    public void ternaryTest() throws Exception {
+        Expr<Void> e = expr2AST("true||false?1:2");
+        String t =
+            "StmtExpr [\n"
+                + "if Binary [OR, BoolConst [true], BoolConst [false]]\n"
+                + ",then\n"
+                + "exprStmt NumConst [1]\n"
+                + ",else\n"
+                + "exprStmt NumConst [2]\n"
+                + "]";
+        test(e, t, BlocklyType.NUMBER);
+    }
+
+    @Test
     public void testFromXml() throws Exception {
         Phrase<Void> ast = this.h.generateAST("/expressionblock/eval_expr_1add2.xml");
         String t = "Binary [ADD, NumConst [1], NumConst [2]]";
