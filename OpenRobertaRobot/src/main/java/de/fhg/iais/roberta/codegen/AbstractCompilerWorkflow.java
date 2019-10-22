@@ -46,6 +46,20 @@ public abstract class AbstractCompilerWorkflow implements ICompilerWorkflow {
     }
 
     @Override
+    public void generateSourceAndCompile(
+        String token,
+        String programName,
+        BlocklyProgramAndConfigTransformer transformer,
+        ILanguage language,
+        String SSID,
+        String password) {
+        generateSourceCode(token, programName, transformer, SSID, password, language);
+        if ( this.workflowResult == Key.COMPILERWORKFLOW_SUCCESS ) {
+            compileSourceCode(token, programName, language, null);
+        }
+    }
+
+    @Override
     public final Key getWorkflowResult() {
         return this.workflowResult;
     }

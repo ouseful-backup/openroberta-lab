@@ -607,6 +607,8 @@ public class SenseboxCppVisitor extends AbstractCommonArduinoCppVisitor implemen
                     this.nlIndent();
                     break;
                 case SC.TEMPERATURE:
+                    this.sb.append("delay(20);"); //TODO remove this from here after updating the resource library - 23.10.2019, Artem Vinokurov
+                    this.nlIndent();
                     this.sb.append("_bmp280_").append(usedConfigurationBlock.getUserDefinedPortName()).append(".begin();");
                     this.nlIndent();
                     break;

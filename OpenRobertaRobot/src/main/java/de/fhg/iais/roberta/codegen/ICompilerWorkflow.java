@@ -84,6 +84,15 @@ public interface ICompilerWorkflow {
      */
     void generateSourceAndCompile(String token, String programName, BlocklyProgramAndConfigTransformer transformer, ILanguage language);
 
+    default void generateSourceAndCompile(
+        String token,
+        String programName,
+        BlocklyProgramAndConfigTransformer transformer,
+        ILanguage language,
+        String SSID,
+        String password) {
+    }
+
     /**
      * return the robot configuration for a given XML configuration text.
      *
