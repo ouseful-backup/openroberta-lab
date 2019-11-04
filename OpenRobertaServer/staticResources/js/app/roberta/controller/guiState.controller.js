@@ -194,18 +194,21 @@ define([ 'exports', 'util', 'log', 'message', 'guiState.model', 'progHelp.contro
                 $('#head-navi-icon-robot').addClass('wait');
                 GUISTATE.gui.blocklyWorkspace.robControls.enable('runOnBrick');
                 $('#menuRunProg').parent().removeClass('disabled');
+                $('#runSourceCodeEditor').removeClass('disabled');
             } else if (GUISTATE.robot.state === 'busy') {
                 $('#head-navi-icon-robot').removeClass('wait');
                 $('#head-navi-icon-robot').removeClass('error');
                 $('#head-navi-icon-robot').addClass('busy');
                 GUISTATE.gui.blocklyWorkspace.robControls.disable('runOnBrick');
                 $('#menuRunProg').parent().addClass('disabled');
+                $('#runSourceCodeEditor').addClass('disabled');
             } else {
                 $('#head-navi-icon-robot').removeClass('busy');
                 $('#head-navi-icon-robot').removeClass('wait');
                 $('#head-navi-icon-robot').addClass('error');
                 GUISTATE.gui.blocklyWorkspace.robControls.disable('runOnBrick');
                 $('#menuRunProg').parent().addClass('disabled');
+                $('#runSourceCodeEditor').addClass('disabled');
             }
             break;
         case GUISTATE.gui.connectionType.AUTO:
@@ -327,6 +330,7 @@ define([ 'exports', 'util', 'log', 'message', 'guiState.model', 'progHelp.contro
                 GUISTATE.gui.blocklyWorkspace.robControls.enable('runOnBrick');
             }
             $('#menuRunProg').parent().removeClass('disabled');
+            $('#runSourceCodeEditor').removeClass('disabled');
             $('#menuConnect').parent().addClass('disabled');
             setPingTime(LONG);
             break;

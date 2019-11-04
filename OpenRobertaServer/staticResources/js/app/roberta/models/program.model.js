@@ -276,7 +276,26 @@ define([ 'exports', 'comm' ], function(exports, COMM) {
     }
 
     exports.runInSim = runInSim;
+    
+    /**
+     * Run program from the source code editor
+     * 
+     * @param programName
+     *            {String} - name of the program
+     * @param programText
+     *            {String} - source code of the program
+     */
 
+    function runNative(programName, programText, language, successFn) {
+        COMM.json("/projectWorkflow/runNative", {
+            "programName" : programName,
+            "programText" : programText,
+            "language" : language
+        }, successFn, "run program '" + programName + "'");
+    }
+
+    exports.runNative = runNative;
+    
     /**
      * Compile geenrated source code
      * 
@@ -287,7 +306,7 @@ define([ 'exports', 'comm' ], function(exports, COMM) {
      * 
      */
     function compileN(programName, programText, language, successFn) {
-        COMM.json("/projectWorkflow/runNative", {
+        COMM.json("/projectWorkflow/compileNative", {
             "programName" : programName,
             "programText" : programText,
             "language" : language
@@ -308,8 +327,8 @@ define([ 'exports', 'comm' ], function(exports, COMM) {
     function compileP(programName, programText, language, successFn) {
         COMM.json("/projectWorkflow/compileProgram", {
             "cmd" : "compileP",
-            "name" : programName,
-            "program" : programText,
+            "programName" : programName,
+            "programText" : programText,
             "language" : language
         }, successFn, "compile program '" + programName + "'");
     }

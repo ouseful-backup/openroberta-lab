@@ -26,6 +26,13 @@ define([ 'exports', 'comm', 'message', 'log', 'util', 'guiState.controller', 'pr
         $('#fileSelector').trigger('click'); // opening dialog 
     }
     exports.importXml = importXml;
+    
+    function importSourceCode(callback) {
+        init(callback);
+        $('#fileSelector').attr("accept", "." + GUISTATE_C.getSourceCodeFileExtension());
+        $('#fileSelector').trigger('click'); // opening dialog 
+    }
+    exports.importSourceCode = importSourceCode;
 
     function openProgramFromXML(target) {
         var robotType = target[1];

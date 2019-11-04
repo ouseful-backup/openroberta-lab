@@ -98,6 +98,7 @@ limitations under the License.
                             <li class="login"><a href="#" id="menuSaveAsProg" class="typcn typcn-cloud-storage" lkey="Blockly.Msg.MENU_SAVE_AS">speichern
                                     unter ...</a></li>
                             <li class=""><a href="#" id="menuShowCode" class="typcn typcn-code" lkey="Blockly.Msg.MENU_SHOW_CODE">show code</a></li>
+                            <li class=""><a href="#" id="menuSourceCodeEditor" class="typcn typcn-code" lkey="Blockly.Msg.MENU_SOURCE_CODE_EDITOR">open source code editor</a></li>
                             <li class=""><a href="#" id="menuLinkProg" class="typcn typcn-link" lkey="Blockly.Msg.MENU_CREATE_LINK">erstelle
                                     Programmlink ...</a></li>
                             <li class=""><a href="#" id="menuExportProg" class="typcn typcn-download" lkey="Blockly.Msg.MENU_EXPORT_PROG">export
@@ -273,6 +274,7 @@ limitations under the License.
                 <li class="hidden"><a data-toggle="tab" id="tabProgList" href="#progList">Listing of programs</a></li>
                 <li class="hidden"><a data-toggle="tab" id="tabConfList" href="#confList">Listing of configurations</a></li>
                 <li class="hidden"><a data-toggle="tab" id="tabLogList" href="#logList">Logging</a></li>
+                <li class="hidden"><a data-toggle="tab" id="tabSourceCodeEditor" href="#sourceCodeEditorPane">Source code editor</a></li>
                 <li class="hidden"><a data-toggle="tab" id="tabGalleryList" href="#galleryList">Galery</a></li>
                 <li class="hidden"><a data-toggle="tab" id="tabTutorialList" href="#tutorialList">Tutorial</a></li>
             </ul>
@@ -458,6 +460,31 @@ limitations under the License.
             </div>
             <table id="logTable">
             </table>
+        </div>
+        <div id="sourceCodeEditorPane" class="tab-pane fade">
+            <div id="sourceCodeEditorToolbar">
+                <button id="backSourceCodeEditor" class="btn backList" lkey="Blockly.Msg.LIST_BACK_TOOLTIP" rel="tooltip" data-original-title="Back to previous view.">
+                    <i class="typcn typcn-arrow-left"></i>
+                </button>
+                <button id="runSourceCodeEditor" class="btn" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_RUN_TOOLTIP" rel="tooltip" data-original-title="Run on the robot.">
+                    <i class="typcn typcn-media-play"></i>
+                </button>               
+                <button id="buildSourceCodeEditor" class="btn" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_BUILD_TOOLTIP" rel="tooltip" data-original-title="Build the source.">
+                    <i class="typcn typcn-spanner"></i>
+                </button>                
+                <button id="downloadSourceCodeEditor" class="btn" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_DOWNLOAD_TOOLTIP" rel="tooltip" data-original-title="Download the source.">
+                    <i class="typcn typcn-arrow-down-outline"></i>
+                </button>                
+                <button id="uploadSourceCodeEditor" class="btn" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_UPLOAD_TOOLTIP" rel="tooltip" data-original-title="Upload the source.">
+                    <i class="typcn typcn-arrow-up-outline"></i>
+                </button>
+                <button id="importSourceCodeEditor" class="btn" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_IMPORT_TOOLTIP" rel="tooltip" data-original-title="Import from Blockly workspace.">
+                    <i class="typcn typcn-arrow-loop-outline"></i>
+                </button>
+            </div>
+            <div id="sourceCodeEditor" class="md-form">
+			  <textarea id="sourceCodeEditorTextArea" class="md-textarea form-control" rows="20"></textarea>
+			</div>
         </div>
         <div id="galleryList" class="tab-pane fade">
             <div id="galleryListToolbar">

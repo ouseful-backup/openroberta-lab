@@ -58,6 +58,8 @@ require.config({
         'cookieDisclaimer.controller' : '../app/roberta/controller/cookieDisclaimer.controller',
         'webview.controller' : '../app/roberta/controller/webview.controller',
         'wedo.model' : '../app/roberta/models/wedo.model',
+        
+        'sourceCodeEditor.controller' : '../app/roberta/controller/sourceCodeEditor.controller',
 
         'simulation.constants' : '../app/simulation/simulationLogic/constants',
         'simulation.math' : '../app/simulation/simulationLogic/math',
@@ -126,7 +128,7 @@ require([ 'require', 'wrap', 'log', 'jquery', 'jquery-cookie', 'guiState.control
         'progDelete.controller', 'confDelete.controller', 'progShare.controller', 'cookieDisclaimer.controller', 'menu.controller', 'multSim.controller',
         'user.controller', 'robot.controller', 'program.controller', 'progSim.controller', 'progCode.controller', 'progDelete.controller',
         'progHelp.controller', 'progLegal.controller', 'progInfo.controller', 'progRun.controller', 'configuration.controller', 'language.controller', 'socket.controller',
-        'progTutorial.controller', 'tutorialList.controller', 'volume-meter', 'user.model', 'webview.controller' ], function(require) {
+        'progTutorial.controller', 'tutorialList.controller', 'volume-meter', 'user.model', 'webview.controller', 'sourceCodeEditor.controller' ], function(require) {
 
     $ = require('jquery', 'jquery-cookie');
     WRAP = require('wrap');
@@ -160,6 +162,7 @@ require([ 'require', 'wrap', 'log', 'jquery', 'jquery-cookie', 'guiState.control
     tutorialController = require('progTutorial.controller');
     tutorialListController = require('tutorialList.controller');
     webviewController = require('webview.controller');
+    sourceCodeEditorController = require('sourceCodeEditor.controller');
 
     $(document).ready(WRAP.fn3(init, 'page init'));
 });
@@ -186,6 +189,8 @@ function init() {
         confDeleteController.init();
         progShareController.init();
         logListController.init();
+        
+        sourceCodeEditorController.init();
 
         programController.init();
         configurationController.init();
