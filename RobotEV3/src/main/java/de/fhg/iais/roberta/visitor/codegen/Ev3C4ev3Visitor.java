@@ -842,7 +842,7 @@ public class Ev3C4ev3Visitor extends AbstractCppVisitor implements IEv3Visitor<V
     }
 
     private void generateTurnOnMotor(String port, Expr<Void> speedExpression, boolean isRegulated) {
-        String functionName = isRegulated ? "OnFwdReg" : "OnFwdEx";
+        String functionName = isRegulated ? "NEPOOnFwdReg" : "NEPOOnFwdEx";
         this.sb.append(functionName + "(" + getPrefixedOutputPort(port) + ", ");
         visitSpeedExpression(speedExpression);
         if ( !isRegulated ) {
@@ -879,7 +879,7 @@ public class Ev3C4ev3Visitor extends AbstractCppVisitor implements IEv3Visitor<V
     }
 
     private void generateDrive(Expr<Void> speedExpression, boolean reverse) {
-        String methodName = reverse ? "OnRevSync" : "OnFwdSync";
+        String methodName = reverse ? "NEPOOnRevSync" : "NEPOOnFwdSync";
         this.sb.append(methodName + "(" + getDriveMotorPortsConstant() + ", ");
         visitSpeedExpression(speedExpression);
         this.sb.append(");");
@@ -897,7 +897,7 @@ public class Ev3C4ev3Visitor extends AbstractCppVisitor implements IEv3Visitor<V
     @Override
     public Void visitMotorSetPowerAction(MotorSetPowerAction<Void> motorSetPowerAction) {
         String port = motorSetPowerAction.getUserDefinedPort();
-        this.sb.append("SetPower(" + getPrefixedOutputPort(port) + ", ");
+        this.sb.append("NEPOSetPower(" + getPrefixedOutputPort(port) + ", ");
         visitSpeedExpression(motorSetPowerAction.getPower(), isMotorReverse(port));
         this.sb.append(");");
         return null;
@@ -907,9 +907,9 @@ public class Ev3C4ev3Visitor extends AbstractCppVisitor implements IEv3Visitor<V
     public Void visitMotorStopAction(MotorStopAction<Void> motorStopAction) {
         String port = motorStopAction.getUserDefinedPort();
         if ( motorStopAction.getMode() == MotorStopMode.FLOAT ) {
-            this.sb.append("Float(" + getPrefixedOutputPort(port) + ");");
+            this.sb.append("NEPOFloat(" + getPrefixedOutputPort(port) + ");");
         } else {
-            this.sb.append("Off(" + getPrefixedOutputPort(port) + ");");
+            this.sb.append("NEPOOff(" + getPrefixedOutputPort(port) + ");");
         }
         return null;
     }
@@ -1000,7 +1000,7 @@ public class Ev3C4ev3Visitor extends AbstractCppVisitor implements IEv3Visitor<V
     }
 
     private void generateTurn(Expr<Void> speedExpression, int turn) {
-        this.sb.append("OnFwdSyncEx(" + getDriveMotorPortsConstant() + ", ");
+        this.sb.append("NEPOOnFwdSyncEx(" + getDriveMotorPortsConstant() + ", ");
         visitSpeedExpression(speedExpression);
         this.sb.append(", " + turn + ", RESET_NONE);");
 
