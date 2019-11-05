@@ -2205,3 +2205,11 @@ label.quiz.answer.fail {
 td[lkey="Blockly.Msg.POPUP_DOWNLOAD_STEP_A_SENSEBOX"] {
 	padding-bottom: 2.5em;
 }
+
+.btn.sourceEditor {
+	margin-right: 0;
+}
+
+#sourceCodeEditorTextArea {
+	resize: none;
+}
