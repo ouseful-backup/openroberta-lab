@@ -119,7 +119,7 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
                 + "} else if ( Red == ReadEV3ColorSensor(IN_3) ) {\n"
                 + "    while ( true ) {\n"
                 + "        LcdPicture(LCD_COLOR_BLACK, 0, 0, EYESOPEN);\n"
-                + "        OnFwdReg(OUT_B, Speed(30));\n"
+                + "        NEPOOnFwdReg(OUT_B, Speed(30));\n"
                 + "    }\n"
                 + "}\n"
                 + "PlaySystemSound(SOUND_DOUBLE_BEEP);\n"
@@ -152,7 +152,7 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
                 + "        LcdPicture(LCD_COLOR_BLACK, 0, 0, FLOWERS);\n"
                 + "    } else {\n"
                 + "        while ( !ButtonIsDown(BTNUP) ) {\n"
-                + "            OnFwdReg(OUT_B, Speed(30));\n"
+                + "            NEPOOnFwdReg(OUT_B, Speed(30));\n"
                 + "        }\n"
                 + "    }\n"
                 + "}\n"
@@ -173,9 +173,9 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
                 + CONSTANTS_AND_IMPORTS__WITH_SMALLER_TRACK_WIDTH
                 + BEGIN_MAIN__TOUCH_NULL_INFRARED_ULTRASONIC
                 + "if ( 5 < MotorPower(OUT_B) ) {\n"
-                + "    OnFwdReg(OUT_B, Speed(30));\n"
+                + "    NEPOOnFwdReg(OUT_B, Speed(30));\n"
                 + "    RotateMotorForAngle(OUT_B, Speed(30), 360 * 1);\n"
-                + "    OnFwdSyncEx(OUT_AB, Speed(50), 200, RESET_NONE);"
+                + "    NEPOOnFwdSyncEx(OUT_AB, Speed(50), 200, RESET_NONE);"
                 + "}\n"
                 + "if ( ((MotorRotationCount(OUT_A) / 360.0) + ReadEV3IrSensorProximity(IN_3)) == ReadEV3UltrasonicSensorDistance(IN_4, CM) ) {\n"
                 + "    SetLedPattern(LED_BLACK);\n"
@@ -203,9 +203,9 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
             "" //
                 + CONSTANTS_AND_IMPORTS
                 + BEGIN_MAIN__NULLSORS
-                + "OnFwdReg(OUT_B, Speed(0));\n"
+                + "NEPOOnFwdReg(OUT_B, Speed(0));\n"
                 + "RotateMotorForAngle(OUT_B, Speed(30), 360 * 0);\n"
-                + "OnFwdSyncEx(OUT_BC, Speed(0), -200, RESET_NONE);\n"
+                + "NEPOOnFwdSyncEx(OUT_BC, Speed(0), -200, RESET_NONE);\n"
                 + "SetVolume(50);\n"
                 + "NEPOPlayTone(0, 0);\n"
                 + END_MAIN;
@@ -242,7 +242,7 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
             "" //
                 + CONSTANTS_AND_IMPORTS
                 + BEGIN_MAIN__NULLSORS
-                + "OnFwdReg(OUT_B, Speed(30));\n"
+                + "NEPOOnFwdReg(OUT_B, Speed(30));\n"
                 + "RotateMotorForAngle(OUT_B, Speed(30), 360 * 1);\n"
                 + END_MAIN;
 
@@ -288,7 +288,7 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
                 + CONSTANTS_AND_IMPORTS
                 + "double ___variablenName = 0;\n"
                 + BEGIN_MAIN__NULLSORS
-                + "OnFwdSync(OUT_BC, Speed(50));\n"
+                + "NEPOOnFwdSync(OUT_BC, Speed(50));\n"
                 + "LcdPicture(LCD_COLOR_BLACK,0,0,OLDGLASSES);\n"
                 + END_MAIN;
 
@@ -550,13 +550,13 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
             "" //
                 + CONSTANTS_AND_IMPORTS__WITH_SMALLER_TRACK_WIDTH
                 + BEGIN_MAIN__NULLSORS
-                + "OnFwdReg(OUT_A, Speed(30));\n"
+                + "NEPOOnFwdReg(OUT_A, Speed(30));\n"
                 + "RotateMotorForAngle(OUT_A, Speed(30), 360 * 1);\n"
-                + "OnFwdReg(OUT_B, Speed(30));\n"
+                + "NEPOOnFwdReg(OUT_B, Speed(30));\n"
                 + "RotateMotorForAngle(OUT_B, Speed(30), 360 * 1);\n"
-                + "OnFwdEx(OUT_C, Speed(30), RESET_NONE);\n"
+                + "NEPOOnFwdEx(OUT_C, Speed(30), RESET_NONE);\n"
                 + "RotateMotorForAngle(OUT_C, Speed(30), 360 * 1);\n"
-                + "OnFwdEx(OUT_D, Speed(30), RESET_NONE);\n"
+                + "NEPOOnFwdEx(OUT_D, Speed(30), RESET_NONE);\n"
                 + "RotateMotorForAngle(OUT_D, Speed(30), 360 * 1);\n"
                 + END_MAIN;
         UnitTestHelper
