@@ -2212,4 +2212,10 @@ td[lkey="Blockly.Msg.POPUP_DOWNLOAD_STEP_A_SENSEBOX"] {
 
 #sourceCodeEditorTextArea {
 	resize: none;
+	font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+	font-size: 1em;
+	height:calc(100% - 80px); 
+	box-sizing: border-box;         /* For IE and modern versions of Chrome */
+	-moz-box-sizing: border-box;    /* For Firefox                          */
+	-webkit-box-sizing: border-box; /* For Safari                           */
 }

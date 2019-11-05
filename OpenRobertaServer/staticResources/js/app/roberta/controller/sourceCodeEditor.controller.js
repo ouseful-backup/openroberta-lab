@@ -1,5 +1,5 @@
-define([ 'require', 'exports', 'message', 'log', 'util', 'comm', 'guiState.controller', 'program.model', 'program.controller', 'import.controller', 'blocks', 'jquery', 'blocks-msg'  ], 
-        function(require, exports, MSG, LOG, UTIL, COMM, GUISTATE_C, PROGRAM, PROG_C, IMPORT_C,Blockly, $) {
+define([ 'require', 'exports', 'message', 'log', 'util', 'comm', 'guiState.controller', 'program.model', 'program.controller', 'progRun.controller','import.controller', 'blocks', 'jquery', 'blocks-msg'  ], 
+        function(require, exports, MSG, LOG, UTIL, COMM, GUISTATE_C, PROGRAM, PROG_C, PROGRUN_C, IMPORT_C,Blockly, $) {
 
     function init() {
         $("#sourceCodeEditorTextArea").attr("placeholder", "Import code from Blockly workspace or just start typing");
@@ -16,9 +16,9 @@ define([ 'require', 'exports', 'message', 'log', 'util', 'comm', 'guiState.contr
         $('#runSourceCodeEditor').onWrap('click', function() {
             PROGRAM.runNative(GUISTATE_C.getProgramName(), $("#sourceCodeEditorTextArea").val(), GUISTATE_C.getLanguage(), function(result) {
                 if (result.rc == "ok") {
-                    alert('ok');
+                    PROGRUN_C.runOnBrick();
                 } else {
-                    alert('not ok');
+                    MSG.displayInformation(result, result.message, result.message, GUISTATE_C.getProgramName());
                 }
             });
             return false;
@@ -27,9 +27,9 @@ define([ 'require', 'exports', 'message', 'log', 'util', 'comm', 'guiState.contr
         $('#buildSourceCodeEditor').onWrap('click', function() {
             PROGRAM.compileN(GUISTATE_C.getProgramName(), $("#sourceCodeEditorTextArea").val(), GUISTATE_C.getLanguage(), function(result) {
                 if (result.rc == "ok") {
-                    alert('ok');
+                    MSG.displayPopupMessage(result.message, result.message, false);
                 } else {
-                    alert('not ok');
+                    MSG.displayInformation(result, result.message, result.message, GUISTATE_C.getProgramName());
                 }
             });
             return false;

@@ -98,7 +98,7 @@ limitations under the License.
                             <li class="login"><a href="#" id="menuSaveAsProg" class="typcn typcn-cloud-storage" lkey="Blockly.Msg.MENU_SAVE_AS">speichern
                                     unter ...</a></li>
                             <li class=""><a href="#" id="menuShowCode" class="typcn typcn-code" lkey="Blockly.Msg.MENU_SHOW_CODE">show code</a></li>
-                            <li class=""><a href="#" id="menuSourceCodeEditor" class="typcn typcn-code" lkey="Blockly.Msg.MENU_SOURCE_CODE_EDITOR">open source code editor</a></li>
+                            <li class=""><a href="#" id="menuSourceCodeEditor" class="typcn typcn-edit" lkey="Blockly.Msg.MENU_SOURCE_CODE_EDITOR">open source code editor</a></li>
                             <li class=""><a href="#" id="menuLinkProg" class="typcn typcn-link" lkey="Blockly.Msg.MENU_CREATE_LINK">erstelle
                                     Programmlink ...</a></li>
                             <li class=""><a href="#" id="menuExportProg" class="typcn typcn-download" lkey="Blockly.Msg.MENU_EXPORT_PROG">export
@@ -469,21 +469,11 @@ limitations under the License.
 	                </button>
                 </div>
                 <div class="bars pull-right">
-	                <button id="runSourceCodeEditor" class="btn sourceEditor" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_RUN_TOOLTIP" rel="tooltip" data-original-title="Run on the robot.">
-	                    <i class="typcn typcn-media-play"></i>
-	                </button>               
-	                <button id="buildSourceCodeEditor" class="btn sourceEditor" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_BUILD_TOOLTIP" rel="tooltip" data-original-title="Build the source.">
-	                    <i class="typcn typcn-spanner"></i>
-	                </button>                
-	                <button id="downloadSourceCodeEditor" class="btn sourceEditor" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_DOWNLOAD_TOOLTIP" rel="tooltip" data-original-title="Download the source.">
-	                    <i class="typcn typcn-arrow-down-outline"></i>
-	                </button>                
-	                <button id="uploadSourceCodeEditor" class="btn sourceEditor" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_UPLOAD_TOOLTIP" rel="tooltip" data-original-title="Upload the source.">
-	                    <i class="typcn typcn-arrow-up-outline"></i>
-	                </button>
-	                <button id="importSourceCodeEditor" class="btn sourceEditor" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_IMPORT_TOOLTIP" rel="tooltip" data-original-title="Import from Blockly workspace.">
-	                    <i class="typcn typcn-arrow-loop-outline"></i>
-	                </button>
+	                <button id="runSourceCodeEditor" class="btn sourceEditor typcn typcn-media-play" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_RUN_TOOLTIP" rel="tooltip" data-original-title="Run on the robot"></button>
+	                <button id="buildSourceCodeEditor" class="btn sourceEditor typcn typcn-spanner" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_BUILD_TOOLTIP" rel="tooltip" data-original-title="Build the source"></button>
+	                <button id="downloadSourceCodeEditor" class="btn sourceEditor typcn typcn-arrow-down-outline" lkey="Blockly.Msg.MENU_CODE_DOWNLOAD_TOOLTIP" rel="tooltip" data-original-title="Download the source code of your program on the computer"></button>
+	                <button id="uploadSourceCodeEditor" class="btn sourceEditor typcn typcn-arrow-up-outline" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_UPLOAD_TOOLTIP" rel="tooltip" data-original-title="Upload the source"></button>
+	                <button id="importSourceCodeEditor" class="btn sourceEditor typcn typcn-arrow-loop-outline" lkey="Blockly.Msg.SOURCE_CODE_EDITOR_IMPORT_TOOLTIP" rel="tooltip" data-original-title="Import from Blockly workspace"></button>
                 </div>
             </div>
             <div id="sourceCodeEditor" class="md-form">
