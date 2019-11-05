@@ -1,8 +1,11 @@
 define([ 'require', 'exports', 'message', 'log', 'util', 'comm', 'guiState.controller', 'program.model', 'program.controller', 'progRun.controller','import.controller', 'blocks', 'jquery', 'blocks-msg'  ], 
-        function(require, exports, MSG, LOG, UTIL, COMM, GUISTATE_C, PROGRAM, PROG_C, PROGRUN_C, IMPORT_C,Blockly, $) {
+        function(require, exports, MSG, LOG, UTIL, COMM, GUISTATE_C, PROGRAM, PROG_C, PROGRUN_C, IMPORT_C, Blockly, $) {
 
     function init() {
-        $("#sourceCodeEditorTextArea").attr("placeholder", "Import code from Blockly workspace or just start typing");
+        var lkey = $("#sourceCodeEditorTextArea").attr('lkey');
+        var key = lkey.replace("Blockly.Msg.", "");
+        var value = Blockly.Msg[key];
+        $("#sourceCodeEditorTextArea").attr("placeholder", value);
         initEvents();
     }
     exports.init = init;
@@ -14,13 +17,7 @@ define([ 'require', 'exports', 'message', 'log', 'util', 'comm', 'guiState.contr
         }, "back to previous view");
         
         $('#runSourceCodeEditor').onWrap('click', function() {
-            PROGRAM.runNative(GUISTATE_C.getProgramName(), $("#sourceCodeEditorTextArea").val(), GUISTATE_C.getLanguage(), function(result) {
-                if (result.rc == "ok") {
-                    PROGRUN_C.runOnBrick();
-                } else {
-                    MSG.displayInformation(result, result.message, result.message, GUISTATE_C.getProgramName());
-                }
-            });
+            PROGRUN_C.runOnBrick($("#sourceCodeEditorTextArea").val());
             return false;
         }, "run button clicked");
         

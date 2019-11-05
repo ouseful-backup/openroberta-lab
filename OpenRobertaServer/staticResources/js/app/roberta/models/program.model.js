@@ -252,7 +252,7 @@ define([ 'exports', 'comm' ], function(exports, COMM) {
     }
 
     exports.runOnBrick = runOnBrick;
-
+    
     /**
      * Run program
      * 
