@@ -6,6 +6,17 @@ define([ 'require', 'exports', 'message', 'log', 'util', 'comm', 'guiState.contr
         var key = lkey.replace("Blockly.Msg.", "");
         var value = Blockly.Msg[key];
         $("#sourceCodeEditorTextArea").attr("placeholder", value);
+        var textArea = document.getElementById("sourceCodeEditorTextArea");
+        textArea.addEventListener('keydown', function (e) {
+            var TABKEY = 9;
+            if(e.keyCode == TABKEY) {
+                this.value += "    ";
+                if(e.preventDefault) {
+                    e.preventDefault();
+                }
+                return false;
+            }
+        }, false);
         initEvents();
     }
     exports.init = init;
