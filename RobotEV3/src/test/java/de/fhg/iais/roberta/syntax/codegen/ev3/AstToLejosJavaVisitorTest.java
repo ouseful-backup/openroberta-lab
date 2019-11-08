@@ -1263,4 +1263,61 @@ public class AstToLejosJavaVisitorTest extends Ev3LejosAstTest {
                 configuration,
                 true);
     }
+
+    @Test
+    public void testStopRegulatedMotors() {
+        String expectedCode =
+            "" //
+                + IMPORTS
+                + MAIN_CLASS
+                + BRICK_CONFIGURATION_DECL
+                + "private Set<UsedSensor> usedSensors = new LinkedHashSet<UsedSensor>();"
+                + HAL
+                + createMainMethod(Arrays.asList("", "LARGE", "", "", "", ""), "")
+                + "public void run() throwsException {\n"
+                + " hal.driveDistance(DriveDirection.FOREWARD,30,20);\n"
+                + " hal.stopRegulatedDrive();\n"
+                + "}}\n";
+        UnitTestHelper
+            .checkGeneratedSourceEqualityWithProgramXmlAndSourceAsString(
+                testFactory,
+                expectedCode,
+                "/syntax/code_generator/java/stop_regulated_motors.xml",
+                brickConfiguration,
+                true);
+    }
+
+    @Test
+    public void testStopUnregulatedMotor() {
+        String expectedCode =
+            "" //
+                + IMPORTS
+                + MAIN_CLASS
+                + BRICK_CONFIGURATION_DECL
+                + "private Set<UsedSensor> usedSensors = new LinkedHashSet<UsedSensor>();"
+                + HAL
+                + "public static void main(String[] args) {\n"
+                + " try {\n"
+                + "  brickConfiguration = new EV3Configuration.Builder()\n"
+                + "   .setWheelDiameter(5.6)\n"
+                + "   .setTrackWidth(17.0)\n"
+                + "   .addActor(ActorPort.C, new Actor(ActorType.LARGE, false, DriveDirection.FOREWARD, MotorSide.LEFT))\n"
+                + "   .build();\n"
+                + "  new Test().run();\n"
+                + " } catch ( Exception e ) {\n"
+                + "  Hal.displayExceptionWaitForKeyPress(e);\n"
+                + " }\n"
+                + "}"
+                + "public void run() throwsException {\n"
+                + " hal.turnOnUnregulatedMotor(ActorPort.C,30);\n"
+                + " hal.stopUnregulatedMotor(ActorPort.C,MotorStopMode.FLOAT);\n"
+                + "}}\n";
+        UnitTestHelper
+            .checkGeneratedSourceEqualityWithProgramXmlAndSourceAsString(
+                testFactory,
+                expectedCode,
+                "/syntax/code_generator/java/stop_unregulated_motor.xml",
+                makeStandardConfigurationNonRegulated(),
+                true);
+    }
 }

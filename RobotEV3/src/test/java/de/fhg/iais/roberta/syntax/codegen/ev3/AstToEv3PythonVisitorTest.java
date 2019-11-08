@@ -53,6 +53,10 @@ public class AstToEv3PythonVisitorTest extends Ev3DevAstTest {
         "" //
             + "        'B':Hal.makeLargeMotor(ev3dev.OUTPUT_B, 'on', 'foreward'),\n";
 
+    private static final String CFG_MOTOR_C_UNREGULATED =
+        "" //
+            + "        'C':Hal.makeLargeMotor(ev3dev.OUTPUT_C, 'off', 'foreward'),\n";
+
     private static final String CFG_MOTORS =
         "" //
             + "        'A':Hal.makeLargeMotor(ev3dev.OUTPUT_A, 'on', 'foreward'),\n"
@@ -1145,6 +1149,47 @@ public class AstToEv3PythonVisitorTest extends Ev3DevAstTest {
                 testFactory,
                 expectedResult,
                 "/ast/actions/action_PlayNote.xml",
+                makeStandardConfigurationNonRegulated(),
+                true);
+    }
+
+    @Test
+    public void testStopRegulatedMotors(){
+        String expectedResult =
+            "" //
+                + IMPORTS
+                + make_globals(CFG_MOTORS, "")
+                + "def run():\n"
+                + " hal.driveDistance('A','B',False,'foreward',30,20)\n"
+                + " hal.stopMotors('A','B')"
+                + "\n"
+                + MAIN_METHOD;
+        UnitTestHelper
+            .checkGeneratedSourceEqualityWithProgramXmlAndSourceAsString(
+                testFactory,
+                expectedResult,
+                "/syntax/code_generator/java/stop_regulated_motors.xml",
+                makeLargeLargeTouchGyroInfraredUltrasonic(),
+                true);
+    }
+
+
+    @Test
+    public void testStopUnregulatedMotors(){
+        String expectedResult =
+            "" //
+                + IMPORTS
+                + make_globals(CFG_MOTOR_C_UNREGULATED, "")
+                + "def run():\n"
+                + " hal.turnOnUnregulatedMotor('C',30)\n"
+                + " hal.stopMotor('C','float')\n"
+                + "\n"
+                + MAIN_METHOD;
+        UnitTestHelper
+            .checkGeneratedSourceEqualityWithProgramXmlAndSourceAsString(
+                testFactory,
+                expectedResult,
+                "/syntax/code_generator/java/stop_unregulated_motor.xml",
                 makeStandardConfigurationNonRegulated(),
                 true);
     }

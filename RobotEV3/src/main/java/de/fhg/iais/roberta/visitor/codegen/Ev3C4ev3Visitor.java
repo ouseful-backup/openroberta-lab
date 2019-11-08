@@ -916,7 +916,7 @@ public class Ev3C4ev3Visitor extends AbstractCppVisitor implements IEv3Visitor<V
 
     @Override
     public Void visitMotorDriveStopAction(MotorDriveStopAction<Void> stopAction) {
-        this.sb.append("Off(" + getDriveMotorPortsConstant() + ");");
+        this.sb.append("NEPOOff(" + getDriveMotorPortsConstant() + ");");
         return null;
     }
 

@@ -544,7 +544,7 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
     }
 
     @Test
-    public void testRotateRegulatedUnregulatedForwardBackwardMotors() throws Exception {
+    public void testRotateRegulatedUnregulatedForwardBackwardMotors() {
         ConfigurationAst configuration = makeRotateRegulatedUnregulatedForwardBackwardMotors();
         String expectedCode =
             "" //
@@ -567,6 +567,44 @@ public class Ast2C4ev3VisitorTest extends Ev3C4ev3AstTest {
                 configuration,
                 true);
     }
+
+    @Test
+    public void testStopRegulatedMotors() {
+        String expectedCode =
+            "" //
+                + CONSTANTS_AND_IMPORTS
+                + BEGIN_MAIN__NULLSORS
+                + "RotateMotorForAngle(OUT_BC, Speed(30), (20 * 360) / (M_PI * WHEEL_DIAMETER));\n"
+                + "NEPOOff(OUT_BC);\n"
+                + END_MAIN;
+        UnitTestHelper
+            .checkGeneratedSourceEqualityWithProgramXmlAndSourceAsString(
+                testFactory,
+                expectedCode,
+                "/syntax/code_generator/java/stop_regulated_motors.xml",
+                makeStandard(),
+                true);
+    }
+
+
+    @Test
+    public void testStopUnregulatedMotor() {
+        String expectedCode =
+            "" //
+                + CONSTANTS_AND_IMPORTS__WITH_SMALLER_TRACK_WIDTH
+                + BEGIN_MAIN__NULLSORS
+                + "NEPOOnFwdEx(OUT_C, Speed(30), RESET_NONE);\n"
+                + "NEPOFloat(OUT_C);\n"
+                + END_MAIN;
+        UnitTestHelper
+            .checkGeneratedSourceEqualityWithProgramXmlAndSourceAsString(
+                testFactory,
+                expectedCode,
+                "/syntax/code_generator/java/stop_unregulated_motor.xml",
+                makeStandardConfigurationNonRegulated(),
+                true);
+    }
+
 
     private static String removeSpaces(String string) {
         return string.replaceAll("\\s+", "");
