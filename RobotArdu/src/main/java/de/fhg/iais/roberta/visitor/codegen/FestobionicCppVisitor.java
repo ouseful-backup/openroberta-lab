@@ -216,7 +216,7 @@ public final class FestobionicCppVisitor extends AbstractCommonArduinoCppVisitor
         for ( ConfigurationComponent usedConfigurationBlock : this.configuration.getConfigurationComponentsValues() ) {
             switch ( usedConfigurationBlock.getComponentType() ) {
                 case SC.SERVOMOTOR:
-                    headerFiles.add("#include <Servo.h>");
+                    headerFiles.add("#include <ESP32_Servo.h>");
                     break;
                 case SC.LED:
                     break;
@@ -236,7 +236,7 @@ public final class FestobionicCppVisitor extends AbstractCommonArduinoCppVisitor
             this.sb.append("#include <list>");
             nlIndent();
         }
-        this.sb.append("#include <NEPODefs.h>");
+//        this.sb.append("#include <NEPODefs.h>");
         nlIndent();
         nlIndent();
         this.sb.append("RobertaFunctions rob;");

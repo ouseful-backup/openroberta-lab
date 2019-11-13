@@ -40,7 +40,6 @@ public class FestobionicCompilerWorker implements IWorker {
      */
     private Pair<Key, String> runBuild(Project project) {
         CompilerSetupBean compilerWorkflowBean = (CompilerSetupBean) project.getWorkerResult("CompilerSetup");
-        final String compilerBinDir = compilerWorkflowBean.getCompilerBinDir();
         final String compilerResourcesDir = compilerWorkflowBean.getCompilerResourcesDir();
         final String tempDir = compilerWorkflowBean.getTempDir();
         Util
@@ -76,9 +75,10 @@ public class FestobionicCompilerWorker implements IWorker {
                 "-hardware=" + compilerResourcesDir + "hardware/builtin",
                 "-hardware=" + compilerResourcesDir + "hardware/additional",
                 "-tools=" + compilerResourcesDir + "/" + os + "/tools-builder",
+                "-tools=/home/pwerner/.arduino15/packages/",
                 "-libraries=" + compilerResourcesDir + "/libraries",
                 compilerWorkflowBean.getFqbn(),
-                "-prefs=compiler.path=" + compilerBinDir,
+                "-prefs=runtime.tools.xtensa-esp32-elf-gcc.path=" + compilerResourcesDir + "hardware/additional/esp32/tools/xtensa-esp32-elf-gcc/1.22.0-80-g6c4433a-5.2.0/",
                 "-build-path=" + base.resolve(path).toAbsolutePath().normalize() + "/target/",
                 base.resolve(path).toAbsolutePath().normalize() + "/source/" + project.getProgramName() + "." + project.getSourceCodeFileExtension()
             };
@@ -88,7 +88,7 @@ public class FestobionicCompilerWorker implements IWorker {
         if ( result.getFirst() ) {
             project
                 .setCompiledHex(
-                    AbstractCompilerWorkflow.getBase64EncodedHex(path + "/target/" + project.getProgramName() + "." + project.getBinaryFileExtension()));
+                    AbstractCompilerWorkflow.getBase64EncodedBinary(path + "/target/" + project.getProgramName() + "." + project.getBinaryFileExtension()));
             if ( project.getCompiledHex() != null ) {
                 resultKey = Key.COMPILERWORKFLOW_SUCCESS;
             } else {
