@@ -1,13 +1,8 @@
-#To build:
-#docker build -t psychemedia/robertalab .
-#To probe/debug the build...
-#docker run -it psychemedia/robertalab bash
-#To run:
-#docker run -p 1999:1999 psychemedia/robertalab
-#To expose to other machines on the local netwrok, the docker VM needs port forwarding set up
-#https://blog.ouseful.info/2016/05/22/exposing-services-running-in-a-docker-container-running-in-virtualbox-to-other-computers-on-a-local-network/
+FROM jupyter/minimal-notebook
 
-FROM ubuntu:bionic
+USER root
+
+WORKDIR /
 
 RUN apt-get clean -y && apt-get -y update && apt-get -y upgrade 
 
@@ -27,6 +22,12 @@ RUN mvn clean install
 
 RUN yes | /openroberta-lab/ora.sh create-empty-db
 
-EXPOSE 1999
+#EXPOSE 1999
 
-CMD ["/openroberta-lab/ora.sh", "start-from-git"]
+#cd into /openroberta-lab then run:
+#CMD ["/openroberta-lab/ora.sh", "start-from-git"]
+
+WORKDIR ${HOME}
+USER ${NB_USER}
+
+RUN pip install jupyter-server-proxy
